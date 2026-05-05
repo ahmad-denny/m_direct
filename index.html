@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M|Direct Performance Sumatera</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-style@0.8.13/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -732,7 +732,53 @@
         });
 
         const ws = XLSX.utils.aoa_to_sheet(wsData);
-        ws['!cols'] = headers.map(() => ({ wch: 18 }));
+
+        // Auto column width based on content
+        ws['!cols'] = headers.map((h, ci) => {
+            let maxLen = h.length;
+            wsData.slice(1).forEach(row => {
+                const cell = row[ci] !== undefined ? String(row[ci]) : '';
+                if (cell.length > maxLen) maxLen = cell.length;
+            });
+            return { wch: Math.min(Math.max(maxLen + 2, 10), 40) };
+        });
+
+        // Bold header + background color + border for all cells
+        const totalRows = wsData.length;
+        const totalCols = headers.length;
+        for (let R = 0; R < totalRows; R++) {
+            for (let C = 0; C < totalCols; C++) {
+                const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+                if (!ws[cellRef]) ws[cellRef] = { v: '', t: 's' };
+                const isHeader = R === 0;
+                ws[cellRef].s = {
+                    font: {
+                        bold: isHeader,
+                        color: { rgb: isHeader ? 'FFFFFF' : '1a1a2e' },
+                        sz: isHeader ? 11 : 10,
+                        name: 'Calibri'
+                    },
+                    fill: {
+                        patternType: 'solid',
+                        fgColor: { rgb: isHeader ? '6A1B9A' : (R % 2 === 0 ? 'F3E5F5' : 'FFFFFF') }
+                    },
+                    alignment: {
+                        horizontal: isHeader ? 'center' : 'left',
+                        vertical: 'center',
+                        wrapText: false
+                    },
+                    border: {
+                        top:    { style: 'thin', color: { rgb: 'C0C0C0' } },
+                        bottom: { style: 'thin', color: { rgb: 'C0C0C0' } },
+                        left:   { style: 'thin', color: { rgb: 'C0C0C0' } },
+                        right:  { style: 'thin', color: { rgb: 'C0C0C0' } }
+                    }
+                };
+            }
+        }
+
+        // Row height: header taller
+        ws['!rows'] = wsData.map((_, i) => ({ hpt: i === 0 ? 20 : 15 }));
 
         const period = (document.getElementById('periodeFilter').value || 'All').trim();
         const safePeriod = period.replace(/[\/\\:*?"<>|]/g, '-').replace(/\s+/g, '_');
