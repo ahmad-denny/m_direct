@@ -734,8 +734,9 @@
         ws['!cols'] = headers.map(() => ({ wch: 18 }));
 
         const period = document.getElementById('periodeFilter').value || 'All';
+        const safePeriod = period.replace(/[\/\\:*?"<>|]/g, '-').replace(/\s+/g, '_');
         XLSX.utils.book_append_sheet(wb, ws, 'Performance');
-        XLSX.writeFile(wb, `MDirectPerformance_${period.replace(/\//g,'-')}.xlsx`);
+        XLSX.writeFile(wb, `MDirectPerformance_${safePeriod}.xlsx`);
     }
 
     /* ── HELPERS ── */
