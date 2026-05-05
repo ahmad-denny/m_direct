@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M|Direct Performance Sumatera</title>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx-style@0.8.13/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -212,6 +211,7 @@
 
         /* BUTTONS */
         .button-group-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .button-group-row .btn { flex: 1; justify-content: center; }
 
         .btn {
             padding: 9px 18px;
@@ -232,7 +232,6 @@
         }
         .reset-btn  { background: var(--accent3); }
         .print-btn  { background: var(--accent2); color: white; }
-        .export-btn { background: var(--warning); color: #111; }
         .btn:hover { filter: brightness(1.2); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .btn:active { transform: translateY(0); }
 
@@ -369,7 +368,7 @@
             .button-group-row {
                 grid-column: span 2;
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
             }
             .btn { width: 100%; justify-content: center; padding: 11px 4px; font-size: 10px; }
 
@@ -454,7 +453,6 @@
         <div class="button-group-row">
             <button class="btn reset-btn"  onclick="resetFilter()">↺ Reset</button>
             <button class="btn print-btn"  onclick="printTable()">⎙ Print</button>
-       <!-- <button class="btn export-btn" onclick="exportToExcel()">⬇ Excel</button> -->
         </div>
     </div>
 
@@ -712,80 +710,6 @@
         renderVisibleSparklines();
     }
 
-    /* ── 4. EXPORT TO EXCEL ── */
-    function exportToExcel() {
-        const rows = Array.from(document.querySelectorAll('#tableBody tr'))
-                         .filter(r => r.style.display !== 'none');
-        if (!rows.length) { alert('No visible rows to export.'); return; }
-
-        const wb = XLSX.utils.book_new();
-        const wsData = [headers]; // header row (no sparkline col)
-
-        rows.forEach(tr => {
-            const row = [];
-            for (let i = 0; i < tr.cells.length - 1; i++) { // skip last (spark)
-                const txt = tr.cells[i].textContent.trim();
-                const isPureNumber = txt !== '' && /^-?\d+(\.\d+)?$/.test(txt);
-                row.push(isPureNumber ? parseFloat(txt) : txt);
-            }
-            wsData.push(row);
-        });
-
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-        // Auto column width based on content
-        ws['!cols'] = headers.map((h, ci) => {
-            let maxLen = h.length;
-            wsData.slice(1).forEach(row => {
-                const cell = row[ci] !== undefined ? String(row[ci]) : '';
-                if (cell.length > maxLen) maxLen = cell.length;
-            });
-            return { wch: Math.min(Math.max(maxLen + 2, 10), 40) };
-        });
-
-        // Bold header + background color + border for all cells
-        const totalRows = wsData.length;
-        const totalCols = headers.length;
-        for (let R = 0; R < totalRows; R++) {
-            for (let C = 0; C < totalCols; C++) {
-                const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-                if (!ws[cellRef]) ws[cellRef] = { v: '', t: 's' };
-                const isHeader = R === 0;
-                ws[cellRef].s = {
-                    font: {
-                        bold: isHeader,
-                        color: { rgb: isHeader ? 'FFFFFF' : '1a1a2e' },
-                        sz: isHeader ? 11 : 10,
-                        name: 'Calibri'
-                    },
-                    fill: {
-                        patternType: 'solid',
-                        fgColor: { rgb: isHeader ? '6A1B9A' : (R % 2 === 0 ? 'F3E5F5' : 'FFFFFF') }
-                    },
-                    alignment: {
-                        horizontal: isHeader ? 'center' : 'left',
-                        vertical: 'center',
-                        wrapText: false
-                    },
-                    border: {
-                        top:    { style: 'thin', color: { rgb: 'C0C0C0' } },
-                        bottom: { style: 'thin', color: { rgb: 'C0C0C0' } },
-                        left:   { style: 'thin', color: { rgb: 'C0C0C0' } },
-                        right:  { style: 'thin', color: { rgb: 'C0C0C0' } }
-                    }
-                };
-            }
-        }
-
-        // Row height: header taller
-        ws['!rows'] = wsData.map((_, i) => ({ hpt: i === 0 ? 20 : 15 }));
-
-        const period = (document.getElementById('periodeFilter').value || 'All').trim();
-        const safePeriod = period.replace(/[\/\\:*?"<>|]/g, '-').replace(/\s+/g, '_');
-        const sheetName = safePeriod.substring(0, 31) || 'Performance';
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-        XLSX.writeFile(wb, `MDirectPerformance_${safePeriod}.xlsx`);
-    }
 
     /* ── HELPERS ── */
     function fillSelect(el, dataArray, label, isSortedArray) {
