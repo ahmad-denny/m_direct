@@ -19,6 +19,7 @@
             --accent2: #7c3aed;
             --accent3: #10b981;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --text: #e0eaf5;
             --text-dim: #5a7a96;
             --glow: 0 0 20px rgba(0,229,255,0.15);
@@ -36,7 +37,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated grid background */
         body::before {
             content: '';
             position: fixed;
@@ -58,7 +58,7 @@
             padding: 20px 16px 40px;
         }
 
-        /* ── HEADER ── */
+        /* HEADER */
         .header-banner {
             display: flex;
             align-items: center;
@@ -97,7 +97,6 @@
             color: var(--accent);
             text-shadow: 0 0 20px rgba(0,229,255,0.4);
         }
-
         .header-left h2 span { color: var(--text-dim); }
 
         .as-of-text {
@@ -131,7 +130,7 @@
             50% { opacity: 0.4; transform: scale(0.8); }
         }
 
-        /* ── STATS ROW ── */
+        /* STATS */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -148,23 +147,17 @@
             overflow: hidden;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
-
-        .stat-card:hover {
-            border-color: var(--accent);
-            box-shadow: var(--glow);
-        }
-
+        .stat-card:hover { border-color: var(--accent); box-shadow: var(--glow); }
         .stat-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0;
             width: 3px; height: 100%;
         }
-
-        .stat-card.cyan::before { background: var(--accent); }
+        .stat-card.cyan::before   { background: var(--accent); }
         .stat-card.violet::before { background: var(--accent2); }
-        .stat-card.green::before { background: var(--accent3); }
-        .stat-card.red::before { background: var(--danger); }
+        .stat-card.green::before  { background: var(--accent3); }
+        .stat-card.red::before    { background: var(--danger); }
 
         .stat-label {
             font-size: 10px;
@@ -181,11 +174,10 @@
             line-height: 1;
             color: var(--text);
         }
+        .stat-card.cyan .stat-value  { color: var(--accent); text-shadow: 0 0 15px rgba(0,229,255,0.3); }
+        .stat-card.red .stat-value   { color: var(--danger); text-shadow: 0 0 15px rgba(239,68,68,0.3); }
 
-        .stat-card.cyan .stat-value { color: var(--accent); text-shadow: 0 0 15px rgba(0,229,255,0.3); }
-        .stat-card.red .stat-value { color: var(--danger); text-shadow: 0 0 15px rgba(239,68,68,0.3); }
-
-        /* ── FILTERS ── */
+        /* FILTERS */
         .filter-container {
             display: flex;
             flex-wrap: wrap;
@@ -210,23 +202,16 @@
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-
         input:focus, select:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 2px rgba(0,229,255,0.1);
         }
-
         input::placeholder { color: var(--text-dim); }
         select option { background: var(--surface); color: var(--text); }
+        #periodeFilter { border-color: var(--accent); color: var(--accent); font-weight: 600; }
 
-        #periodeFilter {
-            border-color: var(--accent);
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        /* ── BUTTONS ── */
-        .button-group-row { display: flex; gap: 8px; align-items: center; }
+        /* BUTTONS */
+        .button-group-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
         .btn {
             padding: 9px 18px;
@@ -245,15 +230,13 @@
             gap: 6px;
             white-space: nowrap;
         }
-
-        .reset-btn { background: var(--accent3); }
-        .print-btn { background: var(--accent2); color: white; }
-        .back-btn { background: var(--danger); }
-
+        .reset-btn  { background: var(--accent3); }
+        .print-btn  { background: var(--accent2); color: white; }
+        .export-btn { background: var(--warning); color: #111; }
         .btn:hover { filter: brightness(1.2); transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .btn:active { transform: translateY(0); }
 
-        /* ── CHART ── */
+        /* CHART */
         #chartWrapper {
             display: none;
             margin-bottom: 20px;
@@ -264,8 +247,7 @@
             box-shadow: var(--glow);
             animation: fadeIn 0.3s ease;
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
 
         .chart-header {
             display: flex;
@@ -273,7 +255,6 @@
             align-items: center;
             margin-bottom: 16px;
         }
-
         #chartTitle {
             font-size: 14px;
             font-weight: 700;
@@ -281,7 +262,6 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-
         .close-chart-btn {
             border: 1px solid var(--border);
             background: var(--surface2);
@@ -292,10 +272,9 @@
             font-size: 12px;
             transition: all 0.2s;
         }
-
         .close-chart-btn:hover { border-color: var(--danger); color: var(--danger); }
 
-        /* ── TABLE ── */
+        /* TABLE */
         .table-container {
             border-radius: 10px;
             border: 1px solid var(--border);
@@ -305,7 +284,6 @@
         }
 
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
-
         thead tr { position: sticky; top: 0; z-index: 5; }
 
         th {
@@ -319,25 +297,30 @@
             border-bottom: 2px solid var(--accent);
             border-right: 1px solid var(--border);
             white-space: nowrap;
-            cursor: default;
+            cursor: pointer;
+            user-select: none;
         }
-
         th:last-child { border-right: none; }
+        th:hover { background: rgba(0,229,255,0.08); }
+
+        th .sort-icon { margin-left: 4px; font-size: 10px; opacity: 0.35; }
+        th.sort-asc  .sort-icon::after { content: '▲'; opacity: 1; color: var(--accent); }
+        th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; color: var(--accent); }
+        th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
 
         tbody tr {
             border-bottom: 1px solid var(--border);
             transition: background 0.15s;
         }
-
         tbody tr:hover { background: rgba(0,229,255,0.04); }
 
         td {
-            padding: 10px 14px;
+            padding: 8px 14px;
             border-right: 1px solid var(--border);
             color: var(--text);
             font-size: 12px;
+            vertical-align: middle;
         }
-
         td:last-child { border-right: none; }
 
         .highlight-red { color: var(--danger); font-weight: 700; }
@@ -347,20 +330,30 @@
             color: var(--accent);
             font-weight: 700;
             cursor: pointer;
-            text-decoration: none;
-            position: relative;
             transition: text-shadow 0.2s;
         }
-
         .clickable-name:hover { text-shadow: 0 0 10px var(--accent); }
 
-        /* ── SCROLLBAR ── */
+        /* SPARKLINE */
+        .sparkline-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .spark-val {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            min-width: 22px;
+        }
+
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        /* ── MOBILE ── */
+        /* MOBILE */
         @media screen and (max-width: 768px) {
             .stats-row { grid-template-columns: 1fr 1fr; }
             .stat-value { font-size: 20px; }
@@ -371,16 +364,14 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
-
             #searchBox { grid-column: span 2; }
 
             .button-group-row {
                 grid-column: span 2;
                 display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
             }
-
-            .btn { width: 100%; justify-content: center; padding: 11px 8px; font-size: 11px; }
+            .btn { width: 100%; justify-content: center; padding: 11px 4px; font-size: 10px; }
 
             table thead { display: none; }
             table, tbody, tr, td { display: block; width: 100%; }
@@ -392,11 +383,10 @@
                 background: var(--surface);
                 overflow: hidden;
             }
-
             td {
                 display: flex;
                 justify-content: space-between;
-                align-items: flex-start;
+                align-items: center;
                 text-align: right;
                 padding: 8px 12px;
                 border: none;
@@ -404,7 +394,6 @@
                 word-break: break-word;
                 border-right: none;
             }
-
             td::before {
                 content: attr(data-label);
                 flex: 0 0 45%;
@@ -414,18 +403,15 @@
                 font-size: 10px;
                 color: var(--text-dim);
                 letter-spacing: 0.5px;
-                padding-top: 2px;
             }
-
             td:last-child { border-bottom: none; }
+            .sparkline-cell { justify-content: flex-end; }
         }
     </style>
 </head>
 <body>
-
 <div class="container">
 
-    <!-- HEADER -->
     <div class="header-banner">
         <div class="header-left">
             <h2><span>M|</span>DIRECT PERFORMANCE <span>// SUMATERA</span></h2>
@@ -437,7 +423,6 @@
         </div>
     </div>
 
-    <!-- STATS ROW -->
     <div class="stats-row">
         <div class="stat-card cyan">
             <div class="stat-label">Total Agents</div>
@@ -457,32 +442,30 @@
         </div>
     </div>
 
-    <!-- FILTERS -->
     <div class="filter-container">
         <input type="text" id="searchBox" placeholder="⌕ Search name or code..." onkeyup="filterAndSearchTable()">
         <select id="periodeFilter" onchange="filterAndSearchTable()"><option value="">All Period</option></select>
         <select id="positionFilter" onchange="filterAndSearchTable()"><option value="">All Position</option></select>
-        <select id="branchFilter" onchange="filterAndSearchTable()"><option value="">All Branch</option></select>
-        <select id="zeroMTDFilter" onchange="filterAndSearchTable()">
+        <select id="branchFilter"   onchange="filterAndSearchTable()"><option value="">All Branch</option></select>
+        <select id="zeroMTDFilter"  onchange="filterAndSearchTable()">
             <option value="">Login MTD (All)</option>
             <option value="0">NOT Login MTD</option>
         </select>
         <div class="button-group-row">
-            <button class="btn reset-btn" onclick="resetFilter()">↺ Reset</button>
-            <button class="btn print-btn" onclick="printTable()">⎙ Print</button>
+            <button class="btn reset-btn"  onclick="resetFilter()">↺ Reset</button>
+            <button class="btn print-btn"  onclick="printTable()">⎙ Print</button>
+            <button class="btn export-btn" onclick="exportToExcel()">⬇ Excel</button>
         </div>
     </div>
 
-    <!-- CHART -->
     <div id="chartWrapper">
         <div class="chart-header">
             <h4 id="chartTitle">Performance Detail</h4>
             <button class="close-chart-btn" onclick="closeChart()">✕ Close</button>
         </div>
-        <div style="height: 320px;"><canvas id="performanceChart"></canvas></div>
+        <div style="height:320px;"><canvas id="performanceChart"></canvas></div>
     </div>
 
-    <!-- TABLE -->
     <div class="table-container">
         <table id="dataTable">
             <thead><tr id="tableHead"></tr></thead>
@@ -494,41 +477,112 @@
 <script>
     let tableData = [];
     let myChart = null;
+    let headers = [];
+    let currentSort = { col: -1, dir: 'asc' };
 
     Chart.defaults.color = '#5a7a96';
     Chart.defaults.borderColor = '#1a2d44';
 
     fetch('Dataset.json')
-        .then(res => res.json())
-        .then(data => {
-            tableData = data;
-            populateTable(data);
-        })
+        .then(r => r.json())
+        .then(data => { tableData = data; populateTable(data); })
         .catch(err => {
-            console.error("Error loading JSON:", err);
+            console.error(err);
             document.getElementById('asOfDisplay').textContent = 'ERROR LOADING DATASET.JSON';
         });
 
+    /* ── 1. ANIMATED COUNTER ── */
+    function animateCounter(el, targetVal, suffix) {
+        const end = parseFloat(targetVal);
+        if (isNaN(end)) { el.textContent = targetVal; return; }
+        const from = parseFloat(el.textContent) || 0;
+        const duration = 550;
+        const start = performance.now();
+        (function step(now) {
+            const t = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - t, 3);
+            el.textContent = Math.round(from + (end - from) * ease) + (suffix || '');
+            if (t < 1) requestAnimationFrame(step);
+        })(start);
+    }
+
+    function updateStats(total, login, notLogin) {
+        animateCounter(document.getElementById('statTotal'),    total,    '');
+        animateCounter(document.getElementById('statLogin'),    login,    '');
+        animateCounter(document.getElementById('statNotLogin'), notLogin, '');
+        const rate = total > 0 ? Math.round((login / total) * 100) : null;
+        if (rate !== null) animateCounter(document.getElementById('statRate'), rate, '%');
+        else document.getElementById('statRate').textContent = '—';
+    }
+
+    /* ── 2. SPARKLINE (canvas, color-graded bars) ── */
+    function drawSparkline(canvas, values) {
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        if (!values || values.length === 0) return;
+        const max = Math.max(...values, 1);
+        const gap = 2;
+        const barW = Math.max(1, Math.floor((W - gap * (values.length - 1)) / values.length));
+        values.forEach((v, i) => {
+            const ratio = v / max;
+            const barH = Math.max(2, Math.round(ratio * (H - 2)));
+            const x = i * (barW + gap);
+            const y = H - barH;
+            // red → amber → green gradient
+            let r, g, b;
+            if (ratio < 0.5) {
+                r = 239; g = Math.round(68 + ratio * 2 * 91); b = 68;
+            } else {
+                r = Math.round(239 - (ratio - 0.5) * 2 * 223);
+                g = Math.round(159 + (ratio - 0.5) * 2 * 26);
+                b = Math.round(68  + (ratio - 0.5) * 2 * 61);
+            }
+            ctx.fillStyle = `rgb(${r},${g},${b})`;
+            ctx.fillRect(x, y, barW, barH);
+        });
+    }
+
+    function getSparkValues(row) {
+        return headers
+            .map(h => parseFloat(row[h]))
+            .filter(v => !isNaN(v) && v > 0)
+            .slice(0, 7);
+    }
+
+    /* ── POPULATE TABLE ── */
     function populateTable(data) {
-        const tableHead = document.getElementById('tableHead');
-        const tableBody = document.getElementById('tableBody');
+        const tableHead    = document.getElementById('tableHead');
+        const tableBody    = document.getElementById('tableBody');
         const branchFilter = document.getElementById('branchFilter');
-        const periodeFilter = document.getElementById('periodeFilter');
-        const positionFilter = document.getElementById('positionFilter');
+        const periodeFilter= document.getElementById('periodeFilter');
+        const posFilter    = document.getElementById('positionFilter');
 
         tableBody.innerHTML = '';
         let branches = new Set(), periods = new Set(), positions = new Set();
 
-        if (data.length === 0) return;
+        if (!data.length) return;
+        headers = Object.keys(data[0]);
 
-        const headers = Object.keys(data[0]);
-        tableHead.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+        /* Build sortable header */
+        tableHead.innerHTML = '';
+        headers.forEach((h, i) => {
+            const th = document.createElement('th');
+            th.innerHTML = `${h}<span class="sort-icon"></span>`;
+            th.onclick = () => sortTable(i);
+            tableHead.appendChild(th);
+        });
+        // Sparkline column
+        const thSpark = document.createElement('th');
+        thSpark.innerHTML = 'Spark<span class="sort-icon"></span>';
+        thSpark.title = 'Mini activity chart';
+        tableHead.appendChild(thSpark);
 
         data.forEach(row => {
-            let tr = document.createElement('tr');
+            const tr = document.createElement('tr');
             headers.forEach((header, index) => {
-                let td = document.createElement('td');
-                let val = (row[header] === null || row[header] === undefined) ? "" : row[header];
+                const td  = document.createElement('td');
+                const val = (row[header] == null) ? "" : row[header];
                 td.textContent = val;
                 td.setAttribute('data-label', header);
 
@@ -541,90 +595,177 @@
                 if (header.toLowerCase().includes("dtd") && val === "N") td.classList.add("highlight-red");
                 tr.appendChild(td);
             });
+
+            /* Sparkline cell */
+            const sparkVals = getSparkValues(row);
+            const tdSpark = document.createElement('td');
+            tdSpark.setAttribute('data-label', 'Spark');
+            const div = document.createElement('div');
+            div.className = 'sparkline-cell';
+            const cvs = document.createElement('canvas');
+            cvs.width = 60; cvs.height = 22;
+            cvs.dataset.vals = JSON.stringify(sparkVals);
+            const valSpan = document.createElement('span');
+            valSpan.className = 'spark-val';
+            valSpan.textContent = sparkVals.length ? Math.max(...sparkVals) : '—';
+            div.appendChild(cvs);
+            div.appendChild(valSpan);
+            tdSpark.appendChild(div);
+            tr.appendChild(tdSpark);
+
             tableBody.appendChild(tr);
 
-            if (row['Branch']) branches.add(row['Branch'].toString().trim());
-            if (row['Period']) periods.add(row['Period'].toString().trim());
-            const posColName = headers[3];
-            if (row[posColName]) positions.add(row[posColName].toString().trim());
+            if (row['Branch'])  branches.add(row['Branch'].toString().trim());
+            if (row['Period'])  periods.add(row['Period'].toString().trim());
+            const posCol = headers[3];
+            if (row[posCol]) positions.add(row[posCol].toString().trim());
         });
 
         fillSelect(branchFilter, branches, 'All Branch', false);
-        const sortedPeriods = Array.from(periods).sort((a, b) => new Date(b) - new Date(a));
+        const sortedPeriods = Array.from(periods).sort((a,b) => new Date(b) - new Date(a));
         fillSelect(periodeFilter, sortedPeriods, 'All Period', true);
-        if (sortedPeriods.length > 0) periodeFilter.value = sortedPeriods[0];
+        if (sortedPeriods.length) periodeFilter.value = sortedPeriods[0];
 
-        fillPositionSelect(positionFilter, positions);
+        fillPositionSelect(posFilter, positions);
         filterAndSearchTable();
     }
 
-    function fillSelect(el, dataArray, label, isSortedArray) {
-        el.innerHTML = `<option value="">${label}</option>`;
-        let finalData = isSortedArray ? dataArray : Array.from(dataArray).sort();
-        finalData.forEach(v => {
-            let opt = document.createElement('option');
-            opt.value = v; opt.textContent = v;
-            el.appendChild(opt);
+    function renderVisibleSparklines() {
+        document.querySelectorAll('#tableBody tr').forEach(tr => {
+            if (tr.style.display === 'none') return;
+            const cvs = tr.querySelector('canvas');
+            if (!cvs) return;
+            try { drawSparkline(cvs, JSON.parse(cvs.dataset.vals || '[]')); } catch(e) {}
         });
     }
 
+    /* ── FILTER ── */
     function filterAndSearchTable() {
-        const fPer = document.getElementById('periodeFilter').value;
-        const asOfDisplay = document.getElementById('asOfDisplay');
-        asOfDisplay.textContent = fPer !== "" ? `AS OF PERIOD // ${fPer}` : "ALL PERIODS";
-
-        const sBox = document.getElementById('searchBox').value.toLowerCase();
-        const fPos = document.getElementById('positionFilter').value;
+        const fPer    = document.getElementById('periodeFilter').value;
+        const sBox    = document.getElementById('searchBox').value.toLowerCase();
+        const fPos    = document.getElementById('positionFilter').value;
         const fBranch = document.getElementById('branchFilter').value;
-        const fMTD = document.getElementById('zeroMTDFilter').value;
+        const fMTD    = document.getElementById('zeroMTDFilter').value;
+
+        document.getElementById('asOfDisplay').textContent =
+            fPer ? `AS OF PERIOD // ${fPer}` : 'ALL PERIODS';
 
         let total = 0, login = 0, notLogin = 0;
 
         document.querySelectorAll('#tableBody tr').forEach(row => {
-            const cells = row.cells;
-            if (cells.length === 0) return;
+            const c = row.cells;
+            if (!c || !c.length) return;
 
-            const matchSearch = cells[2].textContent.toLowerCase().includes(sBox) || cells[1].textContent.toLowerCase().includes(sBox);
-            const matchBranch = !fBranch || cells[4].textContent.trim() === fBranch;
-            const matchPer = !fPer || cells[0].textContent.trim() === fPer;
-            let valMTD = cells[5].textContent.trim();
-            const matchMTD = !fMTD || valMTD === fMTD;
-            let matchPos = true;
-            if (fPos === "RM_ALL") matchPos = cells[3].textContent.startsWith("RM");
-            else if (fPos !== "") matchPos = (cells[3].textContent.trim() === fPos);
+            const matchSearch = c[2].textContent.toLowerCase().includes(sBox) ||
+                                c[1].textContent.toLowerCase().includes(sBox);
+            const matchBranch = !fBranch || c[4].textContent.trim() === fBranch;
+            const matchPer    = !fPer    || c[0].textContent.trim() === fPer;
+            const valMTD      = c[5].textContent.trim();
+            const matchMTD    = !fMTD   || valMTD === fMTD;
+            let   matchPos    = true;
+            if      (fPos === "RM_ALL") matchPos = c[3].textContent.startsWith("RM");
+            else if (fPos !== "")       matchPos = c[3].textContent.trim() === fPos;
 
             const visible = matchSearch && matchPos && matchBranch && matchPer && matchMTD;
-            row.style.display = visible ? "" : "none";
+            row.style.display = visible ? '' : 'none';
 
             if (visible) {
                 total++;
-                if (valMTD === "0" || valMTD === 0) notLogin++;
-                else login++;
+                (valMTD === "0" || valMTD === 0) ? notLogin++ : login++;
             }
         });
 
-        document.getElementById('statTotal').textContent = total;
-        document.getElementById('statLogin').textContent = login;
-        document.getElementById('statNotLogin').textContent = notLogin;
-        document.getElementById('statRate').textContent = total > 0 ? Math.round((login / total) * 100) + '%' : '—';
+        updateStats(total, login, notLogin);
+        renderVisibleSparklines();
+    }
+
+    /* ── 3. COLUMN SORT ── */
+    function sortTable(colIndex) {
+        const tbody = document.getElementById('tableBody');
+        const rows  = Array.from(tbody.querySelectorAll('tr'));
+        const ths   = document.querySelectorAll('#tableHead th');
+
+        if (currentSort.col === colIndex) {
+            currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.col = colIndex;
+            currentSort.dir = 'asc';
+        }
+
+        ths.forEach((th, i) => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (i === colIndex) th.classList.add(currentSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+        });
+
+        rows.sort((a, b) => {
+            const ca = a.cells[colIndex]?.textContent.trim() || '';
+            const cb = b.cells[colIndex]?.textContent.trim() || '';
+            const na = parseFloat(ca), nb = parseFloat(cb);
+            const cmp = (!isNaN(na) && !isNaN(nb))
+                ? na - nb
+                : ca.localeCompare(cb, undefined, { numeric: true });
+            return currentSort.dir === 'asc' ? cmp : -cmp;
+        });
+
+        rows.forEach(r => tbody.appendChild(r));
+        renderVisibleSparklines();
+    }
+
+    /* ── 4. EXPORT TO EXCEL ── */
+    function exportToExcel() {
+        const rows = Array.from(document.querySelectorAll('#tableBody tr'))
+                         .filter(r => r.style.display !== 'none');
+        if (!rows.length) { alert('No visible rows to export.'); return; }
+
+        const wb = XLSX.utils.book_new();
+        const wsData = [headers]; // header row (no sparkline col)
+
+        rows.forEach(tr => {
+            const row = [];
+            for (let i = 0; i < tr.cells.length - 1; i++) { // skip last (spark)
+                const txt = tr.cells[i].textContent.trim();
+                const num = parseFloat(txt);
+                row.push(!isNaN(num) && txt !== '' ? num : txt);
+            }
+            wsData.push(row);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!cols'] = headers.map(() => ({ wch: 18 }));
+
+        const period = document.getElementById('periodeFilter').value || 'All';
+        XLSX.utils.book_append_sheet(wb, ws, 'Performance');
+        XLSX.writeFile(wb, `MDirectPerformance_${period.replace(/\//g,'-')}.xlsx`);
+    }
+
+    /* ── HELPERS ── */
+    function fillSelect(el, dataArray, label, isSortedArray) {
+        el.innerHTML = `<option value="">${label}</option>`;
+        const arr = isSortedArray ? dataArray : Array.from(dataArray).sort();
+        arr.forEach(v => {
+            const o = document.createElement('option');
+            o.value = v; o.textContent = v;
+            el.appendChild(o);
+        });
     }
 
     function fillPositionSelect(el, set) {
         el.innerHTML = '<option value="">All Position</option><option value="RM_ALL">RM (All Group)</option>';
         Array.from(set).sort().forEach(v => {
-            let opt = document.createElement('option');
-            opt.value = v; opt.textContent = v;
-            el.appendChild(opt);
+            const o = document.createElement('option');
+            o.value = v; o.textContent = v;
+            el.appendChild(o);
         });
     }
 
     function resetFilter() {
-        document.getElementById('searchBox').value = "";
-        document.getElementById('positionFilter').value = "";
-        document.getElementById('branchFilter').value = "";
-        document.getElementById('zeroMTDFilter').value = "";
+        ['searchBox','positionFilter','branchFilter','zeroMTDFilter'].forEach(id =>
+            document.getElementById(id).value = '');
         const pF = document.getElementById('periodeFilter');
         if (pF.options.length > 1) pF.value = pF.options[1].value;
+        currentSort = { col: -1, dir: 'asc' };
+        document.querySelectorAll('#tableHead th').forEach(th =>
+            th.classList.remove('sort-asc','sort-desc'));
         filterAndSearchTable();
         closeChart();
     }
@@ -636,14 +777,13 @@
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
-        document.getElementById('chartTitle').innerText = "DETAIL // " + (rowData['Marketing Name'] || "USER").toUpperCase();
+        document.getElementById('chartTitle').innerText =
+            'DETAIL // ' + (rowData['Marketing Name'] || 'USER').toUpperCase();
         if (myChart) myChart.destroy();
 
-        const findVal = (target) => {
-            const keys = Object.keys(rowData);
-            const foundKey = keys.find(k => k.toLowerCase().includes(target.toLowerCase()));
-            if (foundKey) return parseFloat(rowData[foundKey].toString().replace(',', '.')) || 0;
-            return 0;
+        const findVal = t => {
+            const k = Object.keys(rowData).find(k => k.toLowerCase().includes(t.toLowerCase()));
+            return k ? parseFloat(rowData[k].toString().replace(',','.')) || 0 : 0;
         };
 
         myChart = new Chart(ctx, {
@@ -651,44 +791,28 @@
             data: {
                 labels: ['Total MTD', 'Daily Average'],
                 datasets: [
-                    {
-                        label: 'Calls',
-                        data: [findVal('MTD Call'), findVal('AVG Call')],
-                        backgroundColor: 'rgba(0,229,255,0.25)',
-                        borderColor: '#00e5ff',
-                        borderWidth: 1.5,
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Visits',
-                        data: [findVal('MTD Visit'), findVal('AVG Visit')],
-                        backgroundColor: 'rgba(16,185,129,0.25)',
-                        borderColor: '#10b981',
-                        borderWidth: 1.5,
-                        borderRadius: 4
-                    }
+                    { label:'Calls',  data:[findVal('MTD Call'), findVal('AVG Call')],
+                      backgroundColor:'rgba(0,229,255,0.25)', borderColor:'#00e5ff', borderWidth:1.5, borderRadius:4 },
+                    { label:'Visits', data:[findVal('MTD Visit'),findVal('AVG Visit')],
+                      backgroundColor:'rgba(16,185,129,0.25)', borderColor:'#10b981', borderWidth:1.5, borderRadius:4 }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive:true, maintainAspectRatio:false,
                 plugins: {
-                    legend: { labels: { color: '#5a7a96', font: { family: "'Share Tech Mono', monospace", size: 11 } } },
-                    datalabels: {
-                        anchor: 'end', align: 'top',
-                        color: '#e0eaf5',
-                        font: { weight: 'bold', family: "'Share Tech Mono', monospace", size: 11 }
-                    }
+                    legend: { labels:{ color:'#5a7a96', font:{ family:"'Share Tech Mono',monospace", size:11 } } },
+                    datalabels: { anchor:'end', align:'top', color:'#e0eaf5',
+                        font:{ weight:'bold', family:"'Share Tech Mono',monospace", size:11 } }
                 },
                 scales: {
-                    x: { grid: { color: '#1a2d44' }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono', monospace" } } },
-                    y: { grid: { color: '#1a2d44' }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono', monospace" } } }
+                    x: { grid:{color:'#1a2d44'}, ticks:{color:'#5a7a96', font:{family:"'Share Tech Mono',monospace"}} },
+                    y: { grid:{color:'#1a2d44'}, ticks:{color:'#5a7a96', font:{family:"'Share Tech Mono',monospace"}} }
                 }
             },
             plugins: [ChartDataLabels]
         });
 
-        wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        wrapper.scrollIntoView({ behavior:'smooth', block:'center' });
     }
 </script>
 </body>
