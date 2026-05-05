@@ -725,8 +725,8 @@
             const row = [];
             for (let i = 0; i < tr.cells.length - 1; i++) { // skip last (spark)
                 const txt = tr.cells[i].textContent.trim();
-                const num = parseFloat(txt);
-                row.push(!isNaN(num) && txt !== '' ? num : txt);
+                const isPureNumber = txt !== '' && /^-?\d+(\.\d+)?$/.test(txt);
+                row.push(isPureNumber ? parseFloat(txt) : txt);
             }
             wsData.push(row);
         });
