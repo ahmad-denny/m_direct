@@ -779,6 +779,7 @@
             const matchMTD    = !fMTD   || valMTD === fMTD;
             let   matchPos    = true;
             if      (fPos === "RM_ALL") matchPos = c[3].textContent.startsWith("RM");
+            else if (fPos === "CS_ALL") matchPos = c[3].textContent.startsWith("CS");
             else if (fPos !== "")       matchPos = c[3].textContent.trim() === fPos;
 
             const visible = matchSearch && matchPos && matchBranch && matchPer && matchMTD;
@@ -839,7 +840,7 @@
     }
 
     function fillPositionSelect(el, set) {
-        el.innerHTML = '<option value="">All Position</option><option value="RM_ALL">RM (All Group)</option>';
+        el.innerHTML = '<option value="">All Position</option><option value="RM_ALL">RM (All Group)</option><option value="CS_ALL">CS (All Group)</option>';
         Array.from(set).sort().forEach(v => {
             const o = document.createElement('option');
             o.value = v; o.textContent = v;
