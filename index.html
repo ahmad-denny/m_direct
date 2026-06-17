@@ -1064,7 +1064,7 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-function showChart(rowData) {
+    function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
@@ -1114,7 +1114,7 @@ function showChart(rowData) {
         const colorVisit   = isDark ? '#10b981' : '#059669';
         const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres dengan Jarak Label Aman (Tidak Saling Berhimpitan)
+        // 4. Inisialisasi Chart Model Progres dengan Jarak Renggang Sempurna
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1130,12 +1130,7 @@ function showChart(rowData) {
                         fill: true,
                         pointStyle: 'circle',
                         pointRadius: 4,
-                        pointHoverRadius: 6,
-                        // Menaruh datalabels untuk MTD Call selalu di atas titik lingkaran
-                        datalabels: {
-                            align: 'top',
-                            offset: 12 
-                        }
+                        pointHoverRadius: 6
                     },
                     { 
                         label: 'MTD Visit', 
@@ -1147,12 +1142,7 @@ function showChart(rowData) {
                         fill: true,
                         pointStyle: 'circle', 
                         pointRadius: 4,
-                        pointHoverRadius: 6,
-                        // Menaruh datalabels untuk MTD Visit di bawah titik lingkaran agar tidak bertubrukan jika nilainya mirip
-                        datalabels: {
-                            align: 'bottom',
-                            offset: 12 
-                        }
+                        pointHoverRadius: 6
                     }
                 ]
             },
@@ -1160,6 +1150,13 @@ function showChart(rowData) {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
+                layout: {
+                    // Memberikan padding atas-bawah di area dalam chart agar label paling ujung memiliki ruang bernapas
+                    padding: {
+                        top: 25,
+                        bottom: 15
+                    }
+                },
                 plugins: {
                     legend: { 
                         labels: { 
@@ -1170,8 +1167,10 @@ function showChart(rowData) {
                         } 
                     },
                     datalabels: {
-                        // Pengaturan dasar global untuk semua label nilai
-                        anchor: 'center', 
+                        // Diubah ke 'end' yang dikombinasikan dengan anchor 'end' agar offset memicu dorongan ke luar secara absolut
+                        anchor: 'end',
+                        align: 'end', 
+                        offset: 14, // Jarak dorong piksel dari bullet ke teks angka (lebih renggang)
                         color: labelColor,
                         font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
                         formatter: (val) => val > 0 ? val : '0'
@@ -1186,8 +1185,7 @@ function showChart(rowData) {
                         grid: { display: false }, 
                         ticks: { display: false }, 
                         border: { display: false },
-                        // Memberikan padding ruang kosong di batas atas & bawah grafik agar label angka tidak terpotong canvas
-                        grace: '15%' 
+                        grace: '20%' // Memberikan ruang aman 20% di bagian atas agar angka tertinggi tidak menabrak batas canvas
                     }
                 }
             },
