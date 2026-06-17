@@ -1064,7 +1064,7 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-    function showChart(rowData) {
+function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
@@ -1114,7 +1114,7 @@
         const colorVisit   = isDark ? '#10b981' : '#059669';
         const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres dengan Jarak Label yang Lebih Renggang
+        // 4. Inisialisasi Chart Model Progres dengan Jarak Label Aman (Tidak Saling Berhimpitan)
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1130,7 +1130,12 @@
                         fill: true,
                         pointStyle: 'circle',
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        // Menaruh datalabels untuk MTD Call selalu di atas titik lingkaran
+                        datalabels: {
+                            align: 'top',
+                            offset: 12 
+                        }
                     },
                     { 
                         label: 'MTD Visit', 
@@ -1142,7 +1147,12 @@
                         fill: true,
                         pointStyle: 'circle', 
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        // Menaruh datalabels untuk MTD Visit di bawah titik lingkaran agar tidak bertubrukan jika nilainya mirip
+                        datalabels: {
+                            align: 'bottom',
+                            offset: 12 
+                        }
                     }
                 ]
             },
@@ -1160,9 +1170,8 @@
                         } 
                     },
                     datalabels: {
-                        anchor: 'end', 
-                        align: 'top', 
-                        offset: 8, // Mengatur jarak renggang vertikal (dalam pixel) dari titik bullet ke angka label
+                        // Pengaturan dasar global untuk semua label nilai
+                        anchor: 'center', 
                         color: labelColor,
                         font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
                         formatter: (val) => val > 0 ? val : '0'
@@ -1176,7 +1185,9 @@
                     y: { 
                         grid: { display: false }, 
                         ticks: { display: false }, 
-                        border: { display: false } 
+                        border: { display: false },
+                        // Memberikan padding ruang kosong di batas atas & bawah grafik agar label angka tidak terpotong canvas
+                        grace: '15%' 
                     }
                 }
             },
