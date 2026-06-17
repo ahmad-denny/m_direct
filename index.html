@@ -1114,7 +1114,7 @@
         const colorVisit   = isDark ? '#10b981' : '#059669';
         const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres Tanpa Grid & Skala Angka
+        // 4. Inisialisasi Chart Model Progres dengan Legend Bullet (Point Style Circle)
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1127,7 +1127,10 @@
                         backgroundColor: colorCallBg, 
                         borderWidth: 3, 
                         tension: 0.3, 
-                        fill: true
+                        fill: true,
+                        pointStyle: 'circle', // Menentukan gaya poin data & legend menjadi bullet
+                        pointRadius: 4,       // Ukuran bulatan titik pada line chart
+                        pointHoverRadius: 6
                     },
                     { 
                         label: 'MTD Visit', 
@@ -1136,7 +1139,10 @@
                         backgroundColor: colorVisitBg, 
                         borderWidth: 3, 
                         tension: 0.3, 
-                        fill: true
+                        fill: true,
+                        pointStyle: 'circle', 
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }
                 ]
             },
@@ -1145,7 +1151,14 @@
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: { labels: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 11 } } },
+                    legend: { 
+                        labels: { 
+                            color: '#5a7a96', 
+                            font: { family: "'Share Tech Mono',monospace", size: 11 },
+                            usePointStyle: true, // Memaksa legend menggunakan pointStyle lingkaran (bullet)
+                            boxWidth: 8          // Menyeimbangkan ukuran tanda lingkaran agar proporsional
+                        } 
+                    },
                     datalabels: {
                         anchor: 'end', align: 'top', color: labelColor,
                         font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
@@ -1154,13 +1167,13 @@
                 },
                 scales: {
                     x: { 
-                        grid: { display: false }, // Menghilangkan grid vertikal
+                        grid: { display: false }, 
                         ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } 
                     },
                     y: { 
-                        grid: { display: false }, // Menghilangkan grid horizontal
-                        ticks: { display: false }, // Menghilangkan angka skala pada sumbu Y
-                        border: { display: false } // Menghilangkan garis tepi sumbu Y
+                        grid: { display: false }, 
+                        ticks: { display: false }, 
+                        border: { display: false } 
                     }
                 }
             },
@@ -1168,7 +1181,7 @@
         });
 
         wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+        }
 </script>
 </body>
 </html>
