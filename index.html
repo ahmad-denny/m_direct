@@ -1064,7 +1064,7 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-function showChart(rowData) {
+    function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
@@ -1091,7 +1091,7 @@ function showChart(rowData) {
         // Urutkan data secara kronologis (dari Januari s.d. tanggal terbaru)
         historicalData.sort((a, b) => parsePeriodToDate(a['Period']) - parsePeriodToDate(b['Period']));
 
-        // 2. Ekstrak label sumbu X dan bersihkan nilai metrik numerik
+        // 2. Ekstrak label sumbu X dan bersihkan nilai metrik numerik MTD
         const labels = historicalData.map(item => item['Period'] || '—');
         
         const cleanVal = (item, keySubstring) => {
@@ -1104,23 +1104,17 @@ function showChart(rowData) {
 
         const mtdCalls  = historicalData.map(item => cleanVal(item, 'MTD Call'));
         const mtdVisits = historicalData.map(item => cleanVal(item, 'MTD Visit'));
-        const avgCalls  = historicalData.map(item => cleanVal(item, 'AVG Call'));
-        const avgVisits = historicalData.map(item => cleanVal(item, 'AVG Visit'));
 
         // 3. Pengaturan Warna Tema Sesuai Dark / Light Mode Asli
         const isDark = document.body.classList.contains('dark-mode');
-        const gridColor  = isDark ? '#1a2d44' : '#c8d6e5';
         const labelColor = isDark ? '#e0eaf5' : '#1a2d44';
         
-        // Menggunakan warna asli bawaan template
-        const colorCall      = isDark ? '#00e5ff' : '#0077aa';
-        const colorCallBg    = isDark ? 'rgba(0,229,255,0.1)' : 'rgba(0,119,170,0.05)';
-        const colorVisit     = isDark ? '#10b981' : '#059669';
-        const colorVisitBg   = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
-        const colorAvgCall   = isDark ? '#7c3aed' : '#6d28d9';
-        const colorAvgVisit  = isDark ? '#f59e0b' : '#d97706';
+        const colorCall    = isDark ? '#00e5ff' : '#0077aa';
+        const colorCallBg  = isDark ? 'rgba(0,229,255,0.1)' : 'rgba(0,119,170,0.05)';
+        const colorVisit   = isDark ? '#10b981' : '#059669';
+        const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres (Line Chart dengan Dual Axis)
+        // 4. Inisialisasi Chart Model Progres Tanpa Grid & Skala Angka
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1133,8 +1127,7 @@ function showChart(rowData) {
                         backgroundColor: colorCallBg, 
                         borderWidth: 3, 
                         tension: 0.3, 
-                        fill: true,
-                        yAxisID: 'y' 
+                        fill: true
                     },
                     { 
                         label: 'MTD Visit', 
@@ -1143,28 +1136,7 @@ function showChart(rowData) {
                         backgroundColor: colorVisitBg, 
                         borderWidth: 3, 
                         tension: 0.3, 
-                        fill: true,
-                        yAxisID: 'y' 
-                    },
-                    { 
-                        label: 'AVG Call', 
-                        data: avgCalls, 
-                        borderColor: colorAvgCall, 
-                        backgroundColor: 'transparent',
-                        borderWidth: 2.5, 
-                        borderDash: [2, 2], // Garis halus penanda progres rata-rata
-                        tension: 0.2, 
-                        yAxisID: 'yAvg' 
-                    },
-                    { 
-                        label: 'AVG Visit', 
-                        data: avgVisits, 
-                        borderColor: colorAvgVisit, 
-                        backgroundColor: 'transparent',
-                        borderWidth: 2.5, 
-                        borderDash: [2, 2],
-                        tension: 0.2, 
-                        yAxisID: 'yAvg' 
+                        fill: true
                     }
                 ]
             },
@@ -1176,23 +1148,19 @@ function showChart(rowData) {
                     legend: { labels: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 11 } } },
                     datalabels: {
                         anchor: 'end', align: 'top', color: labelColor,
-                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 10 },
-                        formatter: (val) => val > 0 ? val : '' // Menyembunyikan angka 0 agar grafik bersih
+                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
+                        formatter: (val) => val > 0 ? val : '0'
                     }
                 },
                 scales: {
-                    x: { grid: { color: gridColor }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } },
-                    y: { 
-                        position: 'left', 
-                        grid: { color: gridColor }, 
-                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } }, 
-                        title: { display: true, text: 'Scale Total MTD', color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 10 } } 
+                    x: { 
+                        grid: { display: false }, // Menghilangkan grid vertikal
+                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } 
                     },
-                    yAvg: { 
-                        position: 'right', 
-                        grid: { drawOnChartArea: false }, 
-                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } }, 
-                        title: { display: true, text: 'Scale Daily AVG', color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 10 } } 
+                    y: { 
+                        grid: { display: false }, // Menghilangkan grid horizontal
+                        ticks: { display: false }, // Menghilangkan angka skala pada sumbu Y
+                        border: { display: false } // Menghilangkan garis tepi sumbu Y
                     }
                 }
             },
