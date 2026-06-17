@@ -1064,54 +1064,101 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-    function showChart(rowData) {
+function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
+        
+        const marketingName = rowData['Marketing Name'] || 'USER';
         document.getElementById('chartTitle').innerText =
-            'DETAIL // ' + (rowData['Marketing Name'] || 'USER').toUpperCase();
+            'TREN LOGIN MTD // ' + marketingName.toUpperCase();
+            
         if (myChart) myChart.destroy();
 
-        const findVal = t => {
-            const k = Object.keys(rowData).find(k => k.toLowerCase().includes(t.toLowerCase()));
-            return k ? parseFloat(rowData[k].toString().replace(',','.')) || 0 : 0;
+        // 1. Ambil & filter riwayat data marketing yang diklik dari dataset utama
+        // Mendukung format tanggal penuh (contoh: "30 Jan 2026") maupun format bulan (contoh: "Mei 2026")
+        const marketingHistory = tableData.filter(row => row['Marketing Name'] === marketingName);
+
+        // Fungsi bantu untuk mengubah string periode menjadi objek Date agar pengurutan akurat
+        const parsePeriodToDate = (periodStr) => {
+            if (!periodStr) return new Date(0);
+            const cleanStr = periodStr.trim();
+            const parts = cleanStr.split(" ");
+            // Jika formatnya "30 Jan 2026" (3 bagian), balik urutannya agar dibaca valid oleh Date()
+            if (parts.length === 3) {
+                return new Date(parts.reverse().join(" "));
+            }
+            // Jika formatnya "Mei 2026" atau objek tanggal langsung
+            const d = new Date(cleanStr);
+            return isNaN(d) ? new Date(cleanStr.split(" ").reverse().join(" ")) : d;
         };
 
+        // 2. Urutkan data secara kronologis dari Januari s.d tanggal terakhir
+        marketingHistory.sort((a, b) => parsePeriodToDate(a['Period']) - parsePeriodToDate(b['Period']));
+
+        // 3. Ekstrak label tanggal/periode dan nilai Login MTD
+        const chartLabels = marketingHistory.map(row => row['Period']);
+        const chartValues = marketingHistory.map(row => {
+            const val = row['Login MTD'];
+            return val ? parseFloat(val.toString().trim()) || 0 : 0;
+        });
+
+        // 4. Konfigurasi Penyesuaian Warna Tema (Dark/Light Mode)
         const isDark = document.body.classList.contains('dark-mode');
         const gridColor  = isDark ? '#1a2d44' : '#c8d6e5';
         const labelColor = isDark ? '#e0eaf5' : '#1a2d44';
-        const callBg     = isDark ? 'rgba(0,229,255,0.25)'  : 'rgba(0,119,170,0.18)';
-        const callBdr    = isDark ? '#00e5ff'  : '#0077aa';
-        const visitBg    = isDark ? 'rgba(16,185,129,0.25)' : 'rgba(5,150,105,0.18)';
-        const visitBdr   = isDark ? '#10b981'  : '#059669';
+        const chartBg    = isDark ? 'rgba(0,229,255,0.25)' : 'rgba(0,119,170,0.18)';
+        const chartBdr   = isDark ? '#00e5ff' : '#0077aa';
 
+        // 5. Inisialisasi Chart baru bertipe bar (bisa diubah ke 'line' jika ingin grafik garis kontinu)
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Total MTD', 'Daily Average'],
+                labels: chartLabels,
                 datasets: [
-                    { label:'Calls',  data:[findVal('MTD Call'), findVal('AVG Call')],
-                      backgroundColor: callBg, borderColor: callBdr, borderWidth:1.5, borderRadius:4 },
-                    { label:'Visits', data:[findVal('MTD Visit'),findVal('AVG Visit')],
-                      backgroundColor: visitBg, borderColor: visitBdr, borderWidth:1.5, borderRadius:4 }
+                    {
+                        label: 'MTD Login',
+                        data: chartValues,
+                        backgroundColor: chartBg,
+                        borderColor: chartBdr,
+                        borderWidth: 1.5,
+                        borderRadius: 4
+                    }
                 ]
             },
             options: {
-                responsive:true, maintainAspectRatio:false,
+                responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { labels:{ color:'#5a7a96', font:{ family:"'Share Tech Mono',monospace", size:11 } } },
-                    datalabels: { anchor:'end', align:'top', color: labelColor,
-                        font:{ weight:'bold', family:"'Share Tech Mono',monospace", size:11 } }
+                    legend: { 
+                        labels: { 
+                            color: '#5a7a96', 
+                            font: { family: "'Share Tech Mono',monospace", size: 11 } 
+                        } 
+                    },
+                    datalabels: { 
+                        anchor: 'end', 
+                        align: 'top', 
+                        color: labelColor,
+                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 } 
+                    }
                 },
                 scales: {
-                    x: { grid:{color: gridColor}, ticks:{color:'#5a7a96', font:{family:"'Share Tech Mono',monospace"}} },
-                    y: { grid:{color: gridColor}, ticks:{color:'#5a7a96', font:{family:"'Share Tech Mono',monospace"}} }
+                    x: { 
+                        grid: { color: gridColor }, 
+                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } 
+                    },
+                    y: { 
+                        grid: { color: gridColor }, 
+                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } },
+                        beginAtZero: true
+                    }
                 }
             },
             plugins: [ChartDataLabels]
         });
 
-        wrapper.scrollIntoView({ behavior:'smooth', block:'center' });
+        wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 </script>
 </body>
