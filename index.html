@@ -1069,90 +1069,127 @@ function showChart(rowData) {
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
         
-        const marketingName = rowData['Marketing Name'] || 'USER';
+        const marketingName = rowData['Marketing Name'];
         document.getElementById('chartTitle').innerText =
-            'TREN LOGIN MTD // ' + marketingName.toUpperCase();
+            'TREND PERFORMANCE // ' + (marketingName || 'USER').toUpperCase();
             
         if (myChart) myChart.destroy();
 
-        // 1. Ambil & filter riwayat data marketing yang diklik dari dataset utama
-        // Mendukung format tanggal penuh (contoh: "30 Jan 2026") maupun format bulan (contoh: "Mei 2026")
-        const marketingHistory = tableData.filter(row => row['Marketing Name'] === marketingName);
+        // 1. Ambil semua data historis marketing ini dari database internal (tableData)
+        const historicalData = tableData.filter(item => item['Marketing Name'] === marketingName);
 
-        // Fungsi bantu untuk mengubah string periode menjadi objek Date agar pengurutan akurat
+        // Helper untuk parse string bulan/tanggal menjadi objek tanggal agar pengurutan akurat
         const parsePeriodToDate = (periodStr) => {
             if (!periodStr) return new Date(0);
             const cleanStr = periodStr.trim();
-            const parts = cleanStr.split(" ");
-            // Jika formatnya "30 Jan 2026" (3 bagian), balik urutannya agar dibaca valid oleh Date()
-            if (parts.length === 3) {
-                return new Date(parts.reverse().join(" "));
-            }
-            // Jika formatnya "Mei 2026" atau objek tanggal langsung
-            const d = new Date(cleanStr);
-            return isNaN(d) ? new Date(cleanStr.split(" ").reverse().join(" ")) : d;
+            // Jika berformat "30 Jan 2026", bisa langsung di-parse oleh penafsir bawaan JS
+            let parsed = new Date(cleanStr);
+            if (!isNaN(parsed)) return parsed;
+            // Jika berformat "Mei 2026", ubah struktur balik agar dipahami JS ("01 Mei 2026")
+            parsed = new Date("01 " + cleanStr);
+            return isNaN(parsed) ? new Date(0) : parsed;
         };
 
-        // 2. Urutkan data secara kronologis dari Januari s.d tanggal terakhir
-        marketingHistory.sort((a, b) => parsePeriodToDate(a['Period']) - parsePeriodToDate(b['Period']));
+        // Urutkan data secara kronologis dari Januari s.d. tanggal terbaru
+        historicalData.sort((a, b) => parsePeriodToDate(a['Period']) - parsePeriodToDate(b['Period']));
 
-        // 3. Ekstrak label tanggal/periode dan nilai Login MTD
-        const chartLabels = marketingHistory.map(row => row['Period']);
-        const chartValues = marketingHistory.map(row => {
-            const val = row['Login MTD'];
-            return val ? parseFloat(val.toString().trim()) || 0 : 0;
-        });
+        // 2. Ekstrak label sumbu X (Periode) dan bersihkan nilai metrik numerik sumbu Y
+        const labels = historicalData.map(item => item['Period'] || '—');
+        
+        const cleanVal = (item, keySubstring) => {
+            const exactKey = Object.keys(item).find(k => k.toLowerCase().includes(keySubstring.toLowerCase()));
+            if (!exactKey || item[exactKey] == null) return 0;
+            const strVal = item[exactKey].toString().trim().replace(',', '.');
+            if (strVal === '-' || strVal === '') return 0;
+            return parseFloat(strVal) || 0;
+        };
 
-        // 4. Konfigurasi Penyesuaian Warna Tema (Dark/Light Mode)
+        const mtdCalls  = historicalData.map(item => cleanVal(item, 'MTD Call'));
+        const mtdVisits = historicalData.map(item => cleanVal(item, 'MTD Visit'));
+        const avgCalls  = historicalData.map(item => cleanVal(item, 'AVG Call'));
+        const avgVisits = historicalData.map(item => cleanVal(item, 'AVG Visit'));
+
+        // 3. Fungsi Matematika Linear Regression untuk Trendline
+        const generateTrendline = (dataArray) => {
+            const n = dataArray.length;
+            if (n === 0) return [];
+            if (n === 1) return [dataArray[0]]; // Titik konstan jika data hanya ada 1 bulan
+            
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += i;
+                sumY += dataArray[i];
+                sumXY += i * dataArray[i];
+                sumXX += i * i;
+            }
+            const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            return dataArray.map((_, i) => Math.max(0, parseFloat((slope * i + intercept).toFixed(2))));
+        };
+
+        // Generate nilai koordinat untuk trendline masing-masing metrik
+        const trendMtdCall  = generateTrendline(mtdCalls);
+        const trendMtdVisit = generateTrendline(mtdVisits);
+        const trendAvgCall  = generateTrendline(avgCalls);
+        const trendAvgVisit = generateTrendline(avgVisits);
+
+        // 4. Pengaturan Warna Tema Sesuai Dark / Light Mode Asli
         const isDark = document.body.classList.contains('dark-mode');
         const gridColor  = isDark ? '#1a2d44' : '#c8d6e5';
         const labelColor = isDark ? '#e0eaf5' : '#1a2d44';
-        const chartBg    = isDark ? 'rgba(0,229,255,0.25)' : 'rgba(0,119,170,0.18)';
-        const chartBdr   = isDark ? '#00e5ff' : '#0077aa';
+        
+        // Menggunakan skema warna CSS variable bawaan template induk
+        const colorCall       = isDark ? '#00e5ff' : '#0077aa';
+        const colorCallBg     = isDark ? 'rgba(0,229,255,0.2)' : 'rgba(0,119,170,0.15)';
+        const colorVisit      = isDark ? '#10b981' : '#059669';
+        const colorVisitBg    = isDark ? 'rgba(16,185,129,0.2)' : 'rgba(5,150,105,0.15)';
+        const colorAvgCall    = isDark ? '#7c3aed' : '#6d28d9';
+        const colorAvgVisit   = isDark ? '#f59e0b' : '#d97706';
 
-        // 5. Inisialisasi Chart baru bertipe bar (bisa diubah ke 'line' jika ingin grafik garis kontinu)
+        // 5. Inisialisasi Chart baru multi-axis (Bar untuk MTD, Line untuk Average & Trendline)
         myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: chartLabels,
+                labels: labels,
                 datasets: [
-                    {
-                        label: 'MTD Login',
-                        data: chartValues,
-                        backgroundColor: chartBg,
-                        borderColor: chartBdr,
-                        borderWidth: 1.5,
-                        borderRadius: 4
-                    }
+                    // MTD Data (Bar Charts)
+                    { type: 'bar', label: 'MTD Call', data: mtdCalls, backgroundColor: colorCallBg, borderColor: colorCall, borderWidth: 1.5, yAxisID: 'y' },
+                    { type: 'bar', label: 'MTD Visit', data: mtdVisits, backgroundColor: colorVisitBg, borderColor: colorVisit, borderWidth: 1.5, yAxisID: 'y' },
+                    
+                    // Average Data (Line Charts)
+                    { type: 'line', label: 'AVG Call', data: avgCalls, borderColor: colorAvgCall, backgroundColor: colorAvgCall, borderWidth: 2, tension: 0.1, yAxisID: 'yAvg' },
+                    { type: 'line', label: 'AVG Visit', data: avgVisits, borderColor: colorAvgVisit, backgroundColor: colorAvgVisit, borderWidth: 2, tension: 0.1, yAxisID: 'yAvg' },
+                    
+                    // Trendline Data (Dotted Line / Garis Putus-putus)
+                    { type: 'line', label: 'Trend MTD Call', data: trendMtdCall, borderColor: colorCall, borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false, yAxisID: 'y' },
+                    { type: 'line', label: 'Trend MTD Visit', data: trendMtdVisit, borderColor: colorVisit, borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false, yAxisID: 'y' },
+                    { type: 'line', label: 'Trend AVG Call', data: trendAvgCall, borderColor: colorAvgCall, borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, fill: false, yAxisID: 'yAvg' },
+                    { type: 'line', label: 'Trend AVG Visit', data: trendAvgVisit, borderColor: colorAvgVisit, borderWidth: 1.5, borderDash: [3, 3], pointRadius: 0, fill: false, yAxisID: 'yAvg' }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
                 plugins: {
-                    legend: { 
-                        labels: { 
-                            color: '#5a7a96', 
-                            font: { family: "'Share Tech Mono',monospace", size: 11 } 
-                        } 
-                    },
-                    datalabels: { 
-                        anchor: 'end', 
-                        align: 'top', 
-                        color: labelColor,
-                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 } 
+                    legend: { labels: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 10 } } },
+                    datalabels: {
+                        anchor: 'end', align: 'top', color: labelColor,
+                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 10 },
+                        formatter: (val, context) => {
+                            // Sembunyikan label nilai pada trendline agar grafik tidak menumpuk padat
+                            if (context.dataset.label.startsWith('Trend')) return '';
+                            return val;
+                        }
                     }
                 },
                 scales: {
-                    x: { 
-                        grid: { color: gridColor }, 
-                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } 
-                    },
-                    y: { 
-                        grid: { color: gridColor }, 
-                        ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } },
-                        beginAtZero: true
-                    }
+                    x: { grid: { color: gridColor }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } } },
+                    // Sumbu Y utama kiri untuk skala kuantitas Total MTD
+                    y: { position: 'left', grid: { color: gridColor }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } }, title: { display: true, text: 'Scale Total MTD', color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 10 } } },
+                    // Sumbu Y tambahan kanan untuk skala desimal Daily Average
+                    yAvg: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#5a7a96', font: { family: "'Share Tech Mono',monospace" } }, title: { display: true, text: 'Scale Daily AVG', color: '#5a7a96', font: { family: "'Share Tech Mono',monospace", size: 10 } } }
                 }
             },
             plugins: [ChartDataLabels]
