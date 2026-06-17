@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M|Direct Performance Sumatera</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .filters {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .filter-group select {
+            padding: 8px 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.9em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-group select:hover {
+            border-color: #667eea;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .card-label {
+            color: #6c757d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.9em;
+        }
+        
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tbody tr:nth-child(even):hover {
+            background: #e9ecef;
+        }
+        
+        .marketing-name {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+        
+        .marketing-name:hover {
+            color: #764ba2;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-y {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-n {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-leave {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .modal-title {
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: #667eea;
+        }
+        
+        .agent-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .agent-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>M|DIRECT PERFORMANCE</h1>
+            <p>Region Sumatera - Live Dashboard</p>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label>Periode</label>
+                <select id="periodFilter">
+                    <option value="all">Semua Periode</option>
+                    <option value="12 Jun 2026">12 Jun 2026</option>
+                    <option value="29 May 2026">29 May 2026</option>
+                    <option value="30 Apr 2026">30 Apr 2026</option>
+                    <option value="31 Mar 2026">31 Mar 2026</option>
+                    <option value="27 Feb 2026">27 Feb 2026</option>
+                    <option value="30 Jan 2026">30 Jan 2026</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Posisi</label>
+                <select id="positionFilter">
+                    <option value="all">Semua Posisi</option>
+                    <option value="RM Consumer">RM Consumer</option>
+                    <option value="RM Funding & Hajj">RM Funding & Hajj</option>
+                    <option value="RM Priority">RM Priority</option>
+                    <option value="RM SME">RM SME</option>
+                    <option value="CS Reguler">CS Reguler</option>
+                    <option value="CS Hybrid">CS Hybrid</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Cabang</label>
+                <select id="branchFilter">
+                    <option value="all">Semua Cabang</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-label">Total Agents</div>
+                <div class="card-value" id="totalAgents">-</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Login MTD</div>
+                <div class="card-value" id="loginMTD">-</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Not Login MTD</div>
+                <div class="card-value" id="notLoginMTD">-</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Login Rate</div>
+                <div class="card-value" id="loginRate">-</div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="performanceTable">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>NIK</th>
+                        <th>Marketing Name</th>
+                        <th>Position</th>
+                        <th>Branch</th>
+                        <th>Login MTD</th>
+                        <th>Login DTD</th>
+                        <th>MTD Call</th>
+                        <th>MTD Visit</th>
+                        <th>AVG Call</th>
+                        <th>AVG Visit</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="11" class="loading">Loading data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Modal for Chart -->
+    <div id="chartModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📊 MTD Login Trend</div>
+                <span class="close">&times;</span>
+            </div>
+            <div class="agent-info">
+                <div class="info-item">
+                    <div class="info-label">Nama</div>
+                    <div class="info-value" id="modalName">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">NIK</div>
+                    <div class="info-value" id="modalNIK">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Posisi</div>
+                    <div class="info-value" id="modalPosition">-</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Cabang</div>
+                    <div class="info-value" id="modalBranch">-</div>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="loginChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data dari JSON (embedded)
+        const rawData = [
+            {"Period ":"30 Jan 2026 ","NIK ":"20110596 ","Marketing Name ":"Arief Rahman ","Position ":"RM Consumer ","Branch ":"MEDAN BALAIKOTA ","Login MTD ":"2 ","Login DTD ":"N ","MTD Call ":" 16  ","MTD Visit ":" 43  ","AVG Call  ":" 0.8  ","AVG Visit ":" 2.1  "},
+            {"Period ":"30 Jan 2026 ","NIK ":"20160052 ","Marketing Name ":"Faisal ","Position ":"RM Consumer ","Branch ":"MEDAN BALAIKOTA ","Login MTD ":"6 ","Login DTD ":"N ","MTD Call ":" 14  ","MTD Visit ":" 29  ","AVG Call  ":" 0.7  ","AVG Visit ":" 1.5  "},
+            {"Period ":"30 Jan 2026 ","NIK ":"20090233 ","Marketing Name ":"Riza Iskandar Lubis ","Position ":"RM Funding  & Hajj ","Branch ":"MEDAN BALAIKOTA ","Login MTD ":"20 ","Login DTD ":"Y ","MTD Call ":" 54  ","MTD Visit ":" 49  ","AVG Call  ":" 2.7  ","AVG Visit ":" 2.5  "}
+            // ... (data lengkap akan diembed di sini)
+        ];
+        
+        // Process agent data for chart
+        const agentData = {};
+        rawData.forEach(record => {
+            const name = record['Marketing Name'].trim();
+            const period = record['Period '].trim();
+            let loginValue = 0;
+            
+            try {
+                const loginStr = record['Login MTD'].trim();
+                loginValue = loginStr && loginStr !== '-' ? parseInt(loginStr) : 0;
+            } catch(e) {
+                loginValue = 0;
+            }
+            
+            if (!agentData[name]) {
+                agentData[name] = {
+                    NIK: record['NIK'].trim(),
+                    Position: record['Position'].trim(),
+                    Branch: record['Branch'].trim(),
+                    monthlyData: {}
+                };
+            }
+            
+            agentData[name].monthlyData[period] = loginValue;
+        });
+        
+        // Define month order
+        const monthOrder = [
+            '30 Jan 2026',
+            '27 Feb 2026',
+            '31 Mar 2026',
+            '30 Apr 2026',
+            '29 May 2026',
+            '12 Jun 2026'
+        ];
+        
+        let currentChart = null;
+        
+        // Populate branch filter
+        const branches = [...new Set(rawData.map(r => r['Branch'].trim()))].sort();
+        const branchSelect = document.getElementById('branchFilter');
+        branches.forEach(branch => {
+            const option = document.createElement('option');
+            option.value = branch;
+            option.textContent = branch;
+            branchSelect.appendChild(option);
+        });
+        
+        // Render table
+        function renderTable(filteredData) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            if (filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;">No data found</td></tr>';
+                return;
+            }
+            
+            filteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                
+                const loginDTD = row['Login DTD'].trim();
+                let statusClass = 'status-n';
+                if (loginDTD === 'Y') statusClass = 'status-y';
+                else if (loginDTD === 'Leave') statusClass = 'status-leave';
+                
+                tr.innerHTML = `
+                    <td>${row['Period '].trim()}</td>
+                    <td>${row['NIK'].trim()}</td>
+                    <td class="marketing-name" onclick="showChart('${row['Marketing Name'].trim()}')">${row['Marketing Name'].trim()}</td>
+                    <td>${row['Position'].trim()}</td>
+                    <td>${row['Branch'].trim()}</td>
+                    <td>${row['Login MTD'].trim()}</td>
+                    <td><span class="status-badge ${statusClass}">${loginDTD}</span></td>
+                    <td>${row['MTD Call'].trim()}</td>
+                    <td>${row['MTD Visit'].trim()}</td>
+                    <td>${row['AVG Call '].trim()}</td>
+                    <td>${row['AVG Visit'].trim()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Update summary cards
+        function updateSummary(filteredData) {
+            const uniqueAgents = new Set(filteredData.map(r => r['NIK'].trim()));
+            const totalAgents = uniqueAgents.size;
+            
+            // Get latest period data
+            const latestPeriod = '12 Jun 2026';
+            const latestData = filteredData.filter(r => r['Period '].trim() === latestPeriod);
+            
+            const loginCount = latestData.filter(r => r['Login DTD'].trim() === 'Y').length;
+            const notLoginCount = latestData.filter(r => r['Login DTD'].trim() === 'N' || r['Login DTD'].trim() === 'Leave').length;
+            const loginRate = totalAgents > 0 ? ((loginCount / totalAgents) * 100).toFixed(1) : 0;
+            
+            document.getElementById('totalAgents').textContent = totalAgents;
+            document.getElementById('loginMTD').textContent = loginCount;
+            document.getElementById('notLoginMTD').textContent = notLoginCount;
+            document.getElementById('loginRate').textContent = loginRate + '%';
+        }
+        
+        // Filter data
+        function filterData() {
+            const periodFilter = document.getElementById('periodFilter').value;
+            const positionFilter = document.getElementById('positionFilter').value;
+            const branchFilter = document.getElementById('branchFilter').value;
+            
+            let filtered = rawData;
+            
+            if (periodFilter !== 'all') {
+                filtered = filtered.filter(r => r['Period '].trim() === periodFilter);
+            }
+            
+            if (positionFilter !== 'all') {
+                filtered = filtered.filter(r => r['Position'].trim() === positionFilter);
+            }
+            
+            if (branchFilter !== 'all') {
+                filtered = filtered.filter(r => r['Branch'].trim() === branchFilter);
+            }
+            
+            renderTable(filtered);
+            updateSummary(filtered);
+        }
+        
+        // Show chart modal
+        function showChart(agentName) {
+            const modal = document.getElementById('chartModal');
+            const agent = agentData[agentName];
+            
+            if (!agent) return;
+            
+            // Update modal info
+            document.getElementById('modalName').textContent = agentName;
+            document.getElementById('modalNIK').textContent = agent.NIK;
+            document.getElementById('modalPosition').textContent = agent.Position;
+            document.getElementById('modalBranch').textContent = agent.Branch;
+            
+            // Prepare chart data
+            const labels = [];
+            const values = [];
+            
+            monthOrder.forEach(month => {
+                labels.push(month);
+                values.push(agent.monthlyData[month] || 0);
+            });
+            
+            // Destroy previous chart if exists
+            if (currentChart) {
+                currentChart.destroy();
+            }
+            
+            // Create new chart
+            const ctx = document.getElementById('loginChart').getContext('2d');
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'MTD Login',
+                        data: values,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'MTD Login: ' + context.parsed.y + ' hari';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 5,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            modal.style.display = 'block';
+        }
+        
+        // Close modal
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('chartModal').style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('chartModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('periodFilter').addEventListener('change', filterData);
+        document.getElementById('positionFilter').addEventListener('change', filterData);
+        document.getElementById('branchFilter').addEventListener('change', filterData);
+        
+        // Initial load
+        filterData();
+    </script>
+</body>
+</html>
