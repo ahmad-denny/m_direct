@@ -1114,7 +1114,7 @@
         const colorVisit   = isDark ? '#10b981' : '#059669';
         const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres dengan Legend Bullet (Point Style Circle)
+        // 4. Inisialisasi Chart Model Progres dengan Jarak Label yang Lebih Renggang
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1128,8 +1128,8 @@
                         borderWidth: 3, 
                         tension: 0.3, 
                         fill: true,
-                        pointStyle: 'circle', // Menentukan gaya poin data & legend menjadi bullet
-                        pointRadius: 4,       // Ukuran bulatan titik pada line chart
+                        pointStyle: 'circle',
+                        pointRadius: 4,
                         pointHoverRadius: 6
                     },
                     { 
@@ -1155,12 +1155,15 @@
                         labels: { 
                             color: '#5a7a96', 
                             font: { family: "'Share Tech Mono',monospace", size: 11 },
-                            usePointStyle: true, // Memaksa legend menggunakan pointStyle lingkaran (bullet)
-                            boxWidth: 8          // Menyeimbangkan ukuran tanda lingkaran agar proporsional
+                            usePointStyle: true,
+                            boxWidth: 8
                         } 
                     },
                     datalabels: {
-                        anchor: 'end', align: 'top', color: labelColor,
+                        anchor: 'end', 
+                        align: 'top', 
+                        offset: 8, // Mengatur jarak renggang vertikal (dalam pixel) dari titik bullet ke angka label
+                        color: labelColor,
                         font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
                         formatter: (val) => val > 0 ? val : '0'
                     }
@@ -1181,7 +1184,7 @@
         });
 
         wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    }
 </script>
 </body>
 </html>
