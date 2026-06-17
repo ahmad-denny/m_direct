@@ -1064,7 +1064,7 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-    function showChart(rowData) {
+function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
@@ -1075,10 +1075,10 @@
             
         if (myChart) myChart.destroy();
 
-        // 1. Ambil semua data historis marketing ini dari tableData
+        // 1. Saring semua data milik marketing yang diklik dari basis tableData
         const historicalData = tableData.filter(item => item['Marketing Name'] === marketingName);
 
-        // Helper untuk parsing periode tanggal agar pengurutan waktu akurat
+        // Fungsi bantu mengurutkan garis waktu periode secara kronologis
         const parsePeriodToDate = (periodStr) => {
             if (!periodStr) return new Date(0);
             const cleanStr = periodStr.trim();
@@ -1088,10 +1088,10 @@
             return isNaN(parsed) ? new Date(0) : parsed;
         };
 
-        // Urutkan data secara kronologis (dari Januari s.d. tanggal terbaru)
+        // Urutkan data dari Januari ke tanggal paling akhir
         historicalData.sort((a, b) => parsePeriodToDate(a['Period']) - parsePeriodToDate(b['Period']));
 
-        // 2. Ekstrak label sumbu X dan bersihkan nilai metrik numerik MTD
+        // 2. Petakan label sumbu X dan bersihkan angka string
         const labels = historicalData.map(item => item['Period'] || '—');
         
         const cleanVal = (item, keySubstring) => {
@@ -1105,7 +1105,7 @@
         const mtdCalls  = historicalData.map(item => cleanVal(item, 'MTD Call'));
         const mtdVisits = historicalData.map(item => cleanVal(item, 'MTD Visit'));
 
-        // 3. Pengaturan Warna Tema Sesuai Dark / Light Mode Asli
+        // 3. Deteksi Mode Warna (Gelap/Terang)
         const isDark = document.body.classList.contains('dark-mode');
         const labelColor = isDark ? '#e0eaf5' : '#1a2d44';
         
@@ -1114,7 +1114,7 @@
         const colorVisit   = isDark ? '#10b981' : '#059669';
         const colorVisitBg = isDark ? 'rgba(16,185,129,0.1)' : 'rgba(5,150,105,0.05)';
 
-        // 4. Inisialisasi Chart Model Progres dengan Jarak Renggang Sempurna
+        // 4. Inisialisasi Grafik Baru dengan Pemaksaan Posisi Datalabels Lokal
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -1130,7 +1130,17 @@
                         fill: true,
                         pointStyle: 'circle',
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        // Kunci Perubahan: Datalabels ditempatkan spesifik di dalam dataset ini
+                        datalabels: {
+                            display: true,
+                            anchor: 'end',
+                            align: 'top',      // Memaksa angka MTD Call bergeser ke atas lingkaran
+                            offset: 12,        // Jarak renggang udara 12 piksel dari lingkaran
+                            color: labelColor,
+                            font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
+                            formatter: (val) => val > 0 ? val : '0'
+                        }
                     },
                     { 
                         label: 'MTD Visit', 
@@ -1142,7 +1152,17 @@
                         fill: true,
                         pointStyle: 'circle', 
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        // Kunci Perubahan: Menghindari tubrukan dengan mengarahkan angka MTD Visit ke arah bawah
+                        datalabels: {
+                            display: true,
+                            anchor: 'start',
+                            align: 'bottom',   // Memaksa angka MTD Visit bergeser ke bawah lingkaran
+                            offset: 12,        // Jarak renggang udara 12 piksel dari lingkaran
+                            color: labelColor,
+                            font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
+                            formatter: (val) => val > 0 ? val : '0'
+                        }
                     }
                 ]
             },
@@ -1151,10 +1171,9 @@
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
                 layout: {
-                    // Memberikan padding atas-bawah di area dalam chart agar label paling ujung memiliki ruang bernapas
                     padding: {
-                        top: 25,
-                        bottom: 15
+                        top: 25,       // Ruang atas ekstra agar label tertinggi tidak terpotong canvas
+                        bottom: 25     // Ruang bawah ekstra agar label terendah tidak terpotong canvas
                     }
                 },
                 plugins: {
@@ -1166,14 +1185,9 @@
                             boxWidth: 8
                         } 
                     },
+                    // Pengaturan datalabels global dikosongkan agar tidak menimpa pengaturan spesifik di atas
                     datalabels: {
-                        // Diubah ke 'end' yang dikombinasikan dengan anchor 'end' agar offset memicu dorongan ke luar secara absolut
-                        anchor: 'end',
-                        align: 'end', 
-                        offset: 14, // Jarak dorong piksel dari bullet ke teks angka (lebih renggang)
-                        color: labelColor,
-                        font: { weight: 'bold', family: "'Share Tech Mono',monospace", size: 11 },
-                        formatter: (val) => val > 0 ? val : '0'
+                        display: false 
                     }
                 },
                 scales: {
@@ -1185,7 +1199,7 @@
                         grid: { display: false }, 
                         ticks: { display: false }, 
                         border: { display: false },
-                        grace: '20%' // Memberikan ruang aman 20% di bagian atas agar angka tertinggi tidak menabrak batas canvas
+                        grace: '25%'  // Memberikan bantalan ekstra 25% skala ruang vertikal
                     }
                 }
             },
