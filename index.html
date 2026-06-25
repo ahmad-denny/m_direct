@@ -42,7 +42,9 @@
             --glow: 0 0 20px rgba(0,229,255,0.15);
             --grid-line: rgba(0,229,255,0.03);
         }
-
+        
+        .footer { text-align: center; padding: 10px; font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+        
         /* HEADER & CONTROLS */
         .header-controls {
             display: flex;
@@ -621,6 +623,7 @@
             <tbody id="tableBody"></tbody>
         </table>
     </div>
+    <div class="footer">Typing, Create, Update, Repeat | Optimized for Mobile & Web | Theme: Light/Dark | RBPM - Region Sumatera</div>
 </div>
 
 <script>
@@ -1066,7 +1069,7 @@
     // Mencetak halaman tabel
     function printTable() { window.print(); }
 
-function showChart(rowData) {
+    function showChart(rowData) {
         const wrapper = document.getElementById('chartWrapper');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         wrapper.style.display = 'block';
