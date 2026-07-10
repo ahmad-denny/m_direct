@@ -174,11 +174,20 @@
         }
 
         /* Chart & Table Area */
+        /* Cari bagian #chartWrapper di CSS Anda dan ubah menjadi: */
         #chartWrapper {
-            display: none; padding: 16px; border: 1px solid var(--border);
-            border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-sm);
-            flex-grow: 1; min-height: 0; overflow: hidden; position: relative;
+            display: none !important; /* Tambahkan !important */
+            padding: 16px; 
+            border: 1px solid var(--border);
+            border-radius: 10px; 
+            background: var(--surface); 
+            box-shadow: var(--shadow-sm);
+            flex-grow: 1; 
+            min-height: 0; 
+            overflow: hidden; 
+            position: relative;
         }
+        
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         #chartTitle { font-size: 14px; font-weight: 700; color: var(--text-main); }
         .close-chart-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
