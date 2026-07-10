@@ -243,7 +243,7 @@
         }
 
         /* =========================================
-           MOBILE OPTIMIZATION
+           MOBILE OPTIMIZATION (PERBAIKAN FOOTER)
            ========================================= */
         @media screen and (max-width: 768px) {
             .header-banner { padding: 10px 12px; }
@@ -270,12 +270,15 @@
             .btn-group { grid-column: span 1; }
             .btn { padding: 8px; font-size: 12px; }
 
-            /* TABLE & CHART HEIGHT MATCHING FIX */
+            /* PERBAIKAN UTAMA: Beri ruang untuk footer */
             .table-container, 
             #chartWrapper { 
-                flex-grow: 1 !important; /* Biarkan grow mengisi sisa ruang */
-                max-height: none !important; /* Hapus batasan tinggi agar fleksibel */
-                overflow-y: auto; /* Tetap scroll internal */
+                flex-grow: 1 !important; 
+                /* Hapus max-height fixed, biarkan flexbox yang mengatur */
+                max-height: none !important; 
+                overflow-y: auto; 
+                /* Tambahkan margin-bottom sebesar tinggi footer + padding container */
+                margin-bottom: 40px; 
             }
             
             .canvas-container {
@@ -307,6 +310,14 @@
 
             th { padding: 8px 4px; font-size: 10px; }
             td { padding: 6px 4px; font-size: 11px; }
+            
+            /* Pastikan footer punya background solid agar tidak transparan saat discroll */
+            .footer {
+                position: relative;
+                z-index: 20;
+                background: var(--bg);
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
