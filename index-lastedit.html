@@ -243,7 +243,7 @@
         }
 
         /* =========================================
-           MOBILE OPTIMIZATION (PERBAIKAN FOOTER)
+           MOBILE OPTIMIZATION (FIXED FOOTER)
            ========================================= */
         @media screen and (max-width: 768px) {
             .header-banner { padding: 10px 12px; }
@@ -270,15 +270,16 @@
             .btn-group { grid-column: span 1; }
             .btn { padding: 8px; font-size: 12px; }
 
-            /* PERBAIKAN UTAMA: Beri ruang untuk footer */
+            /* TABEL & CHART: Beri ruang di bawah agar tidak tertutup footer fixed */
             .table-container, 
             #chartWrapper { 
                 flex-grow: 1 !important; 
-                /* Hapus max-height fixed, biarkan flexbox yang mengatur */
                 max-height: none !important; 
                 overflow-y: auto; 
-                /* Tambahkan margin-bottom sebesar tinggi footer + padding container */
-                margin-bottom: 40px; 
+                /* Margin bawah = Tinggi Footer (30px) + Padding Container (12px*2) + Gap (12px) ≈ 66px */
+                margin-bottom: 70px; 
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
             }
             
             .canvas-container {
@@ -311,12 +312,17 @@
             th { padding: 8px 4px; font-size: 10px; }
             td { padding: 6px 4px; font-size: 11px; }
             
-            /* Pastikan footer punya background solid agar tidak transparan saat discroll */
+            /* FIX FOOTER: Posisi Fixed di Bawah Layar */
             .footer {
-                position: relative;
-                z-index: 20;
-                background: var(--bg);
-                padding: 12px 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                z-index: 100; /* Pastikan di atas elemen lain */
+                background: var(--bg); /* Warna background sama dengan body agar menyatu */
+                padding: 10px 0;
+                margin: 0;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.05); /* Sedikit bayangan agar terpisah visual */
             }
         }
     </style>
