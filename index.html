@@ -183,7 +183,8 @@
         }
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         #chartTitle { font-size: 14px; font-weight: 700; color: var(--text-main); }
-        .close-chart-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+        .close-chart-btn { background: var(--primary-blue); border: 1px solid var(--border); color: #ffffff; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+        .close-chart-btn:hover { background: var(--purple) ; border: 1px solid var(--border); color: #ffffff; cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
         .canvas-container { position: relative; height: calc(100% - 30px); width: 100%; }
 
         /* Table Area - SATU-SATUNYA YANG BOLEH SCROLL */
@@ -725,7 +726,7 @@
         tableContainer.style.display = 'none';
         
         const marketingName = rowData['Marketing Name'] || rowData['Name'];
-        document.getElementById('chartTitle').innerText = 'PROGRESS // ' + (marketingName || 'USER').toUpperCase();
+        document.getElementById('chartTitle').innerText = 'Progres M|Direct - ' + (marketingName || 'USER').toUpperCase();
             
         if (myChart) myChart.destroy();
 
@@ -761,12 +762,20 @@
                 labels: labels,
                 datasets: [
                     { 
-                        label: 'Call', data: mtdCalls, borderColor: colorCall, backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 3,
-                        datalabels: { display: true, anchor: 'end', align: 'top', offset: 4, color: labelColor, font: { weight: '600', size: 9 }, formatter: (val) => val > 0 ? val : '0' }
+                        label: 'Call', data: mtdCalls, borderColor: colorCall, 
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 2, 
+                        tension: 0.3, fill: true, pointRadius: 3,
+                        datalabels: { display: true, anchor: 'end', align: 'top', 
+                        offset: 4, color: labelColor, font: { weight: '600', size: 11 }, 
+                        formatter: (val) => val > 0 ? val : '0' }
                     },
                     { 
-                        label: 'Visit', data: mtdVisits, borderColor: colorVisit, backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 3,
-                        datalabels: { display: true, anchor: 'start', align: 'bottom', offset: 4, color: labelColor, font: { weight: '600', size: 9 }, formatter: (val) => val > 0 ? val : '0' }
+                        label: 'Visit', data: mtdVisits, borderColor: colorVisit, 
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)', borderWidth: 2, 
+                        tension: 0.3, fill: true, pointRadius: 3,
+                        datalabels: { display: true, anchor: 'start', align: 'bottom', 
+                        offset: 4, color: labelColor, font: { weight: '600', size: 11 }, 
+                        formatter: (val) => val > 0 ? val : '0' }
                     }
                 ]
             },
@@ -776,12 +785,15 @@
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
                 plugins: { 
-                    legend: { labels: { color: labelColor, font: { size: 11 }, usePointStyle: true, boxWidth: 6, padding: 10 } }, 
+                    legend: { labels: { color: labelColor, font: { size: 11 }, 
+                    usePointStyle: true, boxWidth: 15, padding: 20 } }, 
                     datalabels: { display: false } 
                 },
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: labelColor, font: { size: 10 }, maxRotation: 45, minRotation: 0 } },
-                    y: { grid: { color: isDark ? '#374151' : '#e5e7eb', borderDash: [5, 5] }, ticks: { color: labelColor, font: { size: 10 } }, grace: '10%' }
+                    x: { grid: { display: false }, ticks: { color: labelColor, font: { size: 11 }, 
+                    maxRotation: 45, minRotation: 0 } },
+                    y: { grid: { color: isDark ? '#374151' : '#e5e7eb', borderDash: [5, 5] }, 
+                    ticks: { color: labelColor, font: { size: 11 } }, grace: '10%' }
                 }
             },
             plugins: [ChartDataLabels]
