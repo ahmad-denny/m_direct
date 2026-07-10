@@ -46,13 +46,13 @@
             display: flex;
             flex-direction: column;
             font-size: 14px;
-            overflow-y: auto; /* Changed from hidden to auto */
+            overflow-y: auto; 
         }
 
         .container {
             width: 100%;
             max-width: 100%;
-            min-height: 100vh; /* Changed from height: 100% */
+            min-height: 100vh; 
             margin: 0 auto;
             padding: 12px;
             display: flex;
@@ -174,9 +174,9 @@
         }
 
         /* Chart Area */
-        /* FIX: Added !important to ensure it's hidden on load */
+        /* PERBAIKAN: Hapus !important agar JS bisa mengontrol display */
         #chartWrapper {
-            display: none !important; 
+            display: none; 
             padding: 16px; border: 1px solid var(--border);
             border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-sm);
             flex-grow: 1; min-height: 0; overflow: hidden; position: relative;
@@ -272,17 +272,13 @@
             /* TABLE & CHART HEIGHT MATCHING FIX */
             .table-container, 
             #chartWrapper { 
-                /* Hapus flex-grow: 1 agar tidak memaksa layar penuh */
                 flex-grow: 0 !important; 
-                /* Samakan tinggi maksimal */
                 max-height: 60vh !important; 
-                /* Izinkan scroll internal */
                 overflow-y: auto; 
             }
             
-            /* Pastikan canvas container menyesuaikan wrapper */
             .canvas-container {
-                height: calc(100% - 40px) !important; /* Kurangi header chart */
+                height: calc(100% - 40px) !important; 
             }
 
             table { table-layout: auto; min-width: 100%; }
@@ -564,9 +560,10 @@
                 td.textContent = val;
                 td.setAttribute('data-label', columnLabels[header] || header);
 
+                // Pastikan event listener terpasang dengan benar
                 if (header === "Marketing Name" || index === 2) {
                     td.classList.add('clickable-name');
-                    // Hanya panggil showChart saat diklik, bukan saat render
+                    // Gunakan arrow function untuk memastikan 'row' terscope dengan benar
                     td.onclick = () => showChart(row);
                 }
                 
@@ -593,8 +590,7 @@
 
         fillPositionSelect(posFilter, positions);
         filterAndSearchTable();
-        // Pastikan chart tertutup saat load awal
-        closeChart(); 
+        closeChart(); // Pastikan chart tertutup saat inisialisasi
     }
 
     function filterAndSearchTable() {
@@ -702,12 +698,16 @@
     }
 
     function showChart(rowData) {
+        // Debugging: Cek apakah fungsi terpanggil
+        console.log("Chart triggered for:", rowData['Marketing Name']);
+
         const wrapper = document.getElementById('chartWrapper');
         const tableContainer = document.getElementById('dataTableContainer');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         
+        // Tampilkan wrapper secara eksplisit
+        wrapper.style.display = 'flex'; 
         tableContainer.style.display = 'none';
-        wrapper.style.display = 'flex'; // Gunakan flex agar header & canvas container tertata rapi
         
         const marketingName = rowData['Marketing Name'] || rowData['Name'];
         document.getElementById('chartTitle').innerText = 'PROGRESS // ' + (marketingName || 'USER').toUpperCase();
@@ -757,7 +757,7 @@
             },
             options: {
                 responsive: true, 
-                maintainAspectRatio: false, // PENTING: Agar chart mengikuti tinggi container
+                maintainAspectRatio: false, 
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
                 plugins: { 
