@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>M|Direct Performance Sumatera</title>
+    <!-- Chart.js Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -35,21 +37,22 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+        /* BODY FIX: Allow scrolling so footer is visible */
         body {
             font-family: var(--font-main);
             background: var(--bg);
             color: var(--text-main);
-            height: 100vh; 
-            overflow: hidden; 
+            min-height: 100vh; 
             display: flex;
             flex-direction: column;
             font-size: 14px;
+            overflow-y: auto; 
         }
 
         .container {
             width: 100%;
             max-width: 100%;
-            height: 100%; 
+            min-height: 100vh; 
             margin: 0 auto;
             padding: 12px;
             display: flex;
@@ -111,10 +114,9 @@
         .icon-btn:hover { background: var(--bg); color: var(--primary-blue); }
         .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* --- STATS ROW (DESKTOP: 4 KOLOM) --- */
+        /* --- STATS ROW --- */
         .stats-row {
             display: grid;
-            /* Default Desktop: 4 Kolom dalam 1 baris */
             grid-template-columns: repeat(4, 1fr); 
             gap: 12px;
             flex-shrink: 0; 
@@ -146,11 +148,10 @@
         .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; text-transform: uppercase; }
         .stat-value { font-size: 20px; font-weight: 700; color: var(--text-main); line-height: 1; }
 
-        /* --- FILTER SECTION (DESKTOP: 6 KOLOM) --- */
+        /* --- FILTER SECTION --- */
         .filter-container {
             background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
             padding: 12px; 
-            /* Default Desktop: Grid 6 Kolom */
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
             gap: 10px;
@@ -165,48 +166,50 @@
             width: 100%; outline: none;
         }
         
-        /* Tombol Reset Container */
-        .btn-group { 
-            display: flex; 
-            width: 100%;
-        }
+        .btn-group { display: flex; width: 100%; }
         .btn { 
             padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; 
             font-size: 13px; color: white; background: var(--second-blue); width: 100%; font-weight: 600;
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
 
-        /* Chart & Table Area */
+        /* Chart Area */
+        /* PERBAIKAN: Hapus !important agar JS bisa mengontrol display */
         #chartWrapper {
-            display: none; padding: 16px; border: 1px solid var(--border);
+            display: none; 
+            padding: 16px; border: 1px solid var(--border);
             border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-sm);
             flex-grow: 1; min-height: 0; overflow: hidden; position: relative;
+            flex-direction: column;
         }
         .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         #chartTitle { font-size: 14px; font-weight: 700; color: var(--text-main); }
         .close-chart-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
         .canvas-container { position: relative; height: calc(100% - 30px); width: 100%; }
 
+        /* Table Area */
         .table-container {
             background: var(--surface); border-radius: 10px; border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm); flex-grow: 1; min-height: 0; 
+            box-shadow: var(--shadow-sm); 
+            flex-grow: 1; 
+            min-height: 0; 
             overflow-y: auto; overflow-x: auto; position: relative;
         }
         
         table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
 
         /* Column Widths Desktop */
-        th:nth-child(1), td:nth-child(1) { width: 10%; } /* Period */
-        th:nth-child(2), td:nth-child(2) { width: 9%; }  /* NIK */
-        th:nth-child(3), td:nth-child(3) { width: 18%; } /* Name */
-        th:nth-child(4), td:nth-child(4) { width: 15%; } /* Position */
-        th:nth-child(5), td:nth-child(5) { width: 14%; } /* Branch */
-        th:nth-child(6), td:nth-child(6) { width: 8%; text-align: center; } /* Login */
-        th:nth-child(7), td:nth-child(7) { width: 8%; text-align: center; } /* DTD */
-        th:nth-child(8), td:nth-child(8) { width: 8%; text-align: right; } /* Call */
-        th:nth-child(9), td:nth-child(9) { width: 8%; text-align: right; } /* Visit */
-        th:nth-child(10), td:nth-child(10) { width: 8%; text-align: right; } /* Avg Call */
-        th:nth-child(11), td:nth-child(11) { width: 8%; text-align: right; } /* Avg Visit */
+        th:nth-child(1), td:nth-child(1) { width: 10%; }
+        th:nth-child(2), td:nth-child(2) { width: 9%; }
+        th:nth-child(3), td:nth-child(3) { width: 18%; }
+        th:nth-child(4), td:nth-child(4) { width: 15%; }
+        th:nth-child(5), td:nth-child(5) { width: 14%; }
+        th:nth-child(6), td:nth-child(6) { width: 8%; text-align: center; }
+        th:nth-child(7), td:nth-child(7) { width: 8%; text-align: center; }
+        th:nth-child(8), td:nth-child(8) { width: 8%; text-align: right; }
+        th:nth-child(9), td:nth-child(9) { width: 8%; text-align: right; }
+        th:nth-child(10), td:nth-child(10) { width: 8%; text-align: right; }
+        th:nth-child(11), td:nth-child(11) { width: 8%; text-align: right; }
 
         thead tr { position: sticky; top: 0; z-index: 10; background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         th {
@@ -229,21 +232,28 @@
         .highlight-red { color: var(--red); font-weight: 600; }
         .highlight-yes { color: var(--green); font-weight: 600; }
 
-        .footer { text-align: center; padding: 4px 0; font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+        .footer { 
+            text-align: center; 
+            padding: 12px 0; 
+            font-size: 10px; 
+            color: var(--text-muted); 
+            flex-shrink: 0; 
+            background: var(--bg); 
+        }
 
-        /* --- MOBILE OPTIMIZATION (Override Desktop Grid) --- */
+        /* =========================================
+           MOBILE OPTIMIZATION
+           ========================================= */
         @media screen and (max-width: 768px) {
             .header-banner { padding: 10px 12px; }
             .header-title h2 { font-size: 16px; }
             
-            /* Mobile Stats: Kembali ke 2 kolom */
             .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
             .stat-card { padding: 10px; gap: 8px; }
             .stat-value { font-size: 18px; }
             .stat-icon-wrapper { width: 32px; height: 32px; }
             .stat-icon-wrapper svg { width: 16px; height: 16px; }
 
-            /* Mobile Filter: Kembali ke 2 kolom */
             .filter-container { 
                 grid-template-columns: 1fr 1fr; 
                 gap: 8px; 
@@ -256,18 +266,27 @@
                 font-size: 12px;
             }
 
-            /* Tombol Reset di mobile tetap 1 kolom (sebelah login status) */
             .btn-group { grid-column: span 1; }
             .btn { padding: 8px; font-size: 12px; }
 
-            /* TABLE COMPACT MODE */
-            .table-container { overflow-x: hidden; }
+            /* TABLE & CHART HEIGHT MATCHING FIX */
+            .table-container, 
+            #chartWrapper { 
+                flex-grow: 0 !important; 
+                max-height: 60vh !important; 
+                overflow-y: auto; 
+            }
+            
+            .canvas-container {
+                height: calc(100% - 40px) !important; 
+            }
+
             table { table-layout: auto; min-width: 100%; }
             
-            th:nth-child(2), td:nth-child(2) { display: none; } /* NIK */
-            th:nth-child(7), td:nth-child(7) { display: none; } /* DTD Login */
-            th:nth-child(10), td:nth-child(10) { display: none; } /* AVG Call */
-            th:nth-child(11), td:nth-child(11) { display: none; } /* AVG Visit */
+            th:nth-child(2), td:nth-child(2) { display: none; }
+            th:nth-child(7), td:nth-child(7) { display: none; }
+            th:nth-child(10), td:nth-child(10) { display: none; }
+            th:nth-child(11), td:nth-child(11) { display: none; }
 
             th:nth-child(1), td:nth-child(1) { width: 18%; font-size: 10px; } 
             th:nth-child(3), td:nth-child(3) { width: 25%; } 
@@ -315,7 +334,7 @@
         </div>
     </div>
 
-    <!-- Stats Row (Desktop: 4 Kolom) -->
+    <!-- Stats Row -->
     <div class="stats-row">
         <div class="stat-card cyan">
             <div class="stat-icon-wrapper">
@@ -355,22 +374,16 @@
         </div>
     </div>
 
-    <!-- Filter Container (Desktop: 6 Kolom) -->
+    <!-- Filter Container -->
     <div class="filter-container hidden" id="filterContainer">
-        <!-- Kolom 1 -->
         <input type="text" id="searchBox" placeholder="Search name..." onkeyup="filterAndSearchTable()">
-        <!-- Kolom 2 -->
         <select id="periodeFilter" onchange="filterAndSearchTable()"><option value="">All Period</option></select>
-        <!-- Kolom 3 -->
         <select id="positionFilter" onchange="filterAndSearchTable()"><option value="">All Position</option></select>
-        <!-- Kolom 4 -->
         <select id="branchFilter"   onchange="filterAndSearchTable()"><option value="">All Branch</option></select>
-        <!-- Kolom 5 -->
         <select id="zeroMTDFilter"  onchange="filterAndSearchTable()">
             <option value="">Login Status (All)</option>
             <option value="0">NOT Login MTD</option>
         </select>
-        <!-- Kolom 6 -->
         <div class="btn-group">
             <button class="btn reset-btn"  onclick="resetFilter()">↺ Reset</button>
         </div>
@@ -547,8 +560,10 @@
                 td.textContent = val;
                 td.setAttribute('data-label', columnLabels[header] || header);
 
+                // Pastikan event listener terpasang dengan benar
                 if (header === "Marketing Name" || index === 2) {
                     td.classList.add('clickable-name');
+                    // Gunakan arrow function untuk memastikan 'row' terscope dengan benar
                     td.onclick = () => showChart(row);
                 }
                 
@@ -575,6 +590,7 @@
 
         fillPositionSelect(posFilter, positions);
         filterAndSearchTable();
+        closeChart(); // Pastikan chart tertutup saat inisialisasi
     }
 
     function filterAndSearchTable() {
@@ -682,16 +698,19 @@
     }
 
     function showChart(rowData) {
+        // Debugging: Cek apakah fungsi terpanggil
+        console.log("Chart triggered for:", rowData['Marketing Name']);
+
         const wrapper = document.getElementById('chartWrapper');
         const tableContainer = document.getElementById('dataTableContainer');
         const ctx = document.getElementById('performanceChart').getContext('2d');
         
+        // Tampilkan wrapper secara eksplisit
+        wrapper.style.display = 'flex'; 
         tableContainer.style.display = 'none';
-        wrapper.style.display = 'flex';
-        wrapper.style.flexDirection = 'column';
         
         const marketingName = rowData['Marketing Name'] || rowData['Name'];
-        document.getElementById('chartTitle').innerText = 'PROGRESS // ' + (marketingName || 'USER').toUpperCase();
+        document.getElementById('chartTitle').innerText = 'Progres M-Direct - ' + (marketingName || 'USER').toUpperCase();
             
         if (myChart) myChart.destroy();
 
@@ -738,7 +757,7 @@
             },
             options: {
                 responsive: true, 
-                maintainAspectRatio: false,
+                maintainAspectRatio: false, 
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
                 plugins: { 
