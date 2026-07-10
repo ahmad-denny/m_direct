@@ -267,14 +267,21 @@
             .btn-group { grid-column: span 1; }
             .btn { padding: 8px; font-size: 12px; }
 
-            /* TABLE COMPACT MODE - PERBAIKAN TINGGI */
-            .table-container { 
-                /* Hapus flex-grow: 1 agar tabel tidak memaksa mengisi layar */
-                flex-grow: 0 !important; 
-                /* Beri tinggi maksimal agar tidak memakan seluruh layar HP */
-                max-height: 60vh; 
-                /* Tetap izinkan scroll internal tabel */
-                overflow-y: auto; 
+            /* SAMAKAN TINGGI CONTAINER TABEL DAN CHART */
+            .table-container, 
+            #chartWrapper {
+                flex-grow: 0 !important;
+                max-height: 60vh !important; /* Tinggi maksimal disamakan */
+                min-height: 300px; /* Opsional: agar tidak terlalu gepeng jika data sedikit */
+                overflow-y: auto;
+                display: block; /* Pastikan display block saat aktif */
+            }
+        
+            /* Khusus untuk Canvas agar mengisi penuh wrapper-nya */
+            .canvas-container {
+                height: calc(100% - 40px) !important; /* Kurangi tinggi header chart */
+                width: 100%;
+                position: relative;
             }
             
             table { table-layout: auto; min-width: 100%; }
@@ -747,7 +754,7 @@
             },
             options: {
                 responsive: true, 
-                maintainAspectRatio: false,
+                maintainAspectRatio: false, // WAJIB FALSE AGAR MENGIKUTI UKURAN WRAPPER
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { top: 10, bottom: 0, left: 0, right: 0 } },
                 plugins: { 
